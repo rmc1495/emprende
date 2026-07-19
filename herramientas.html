@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COTE EMPRENDE - Herramientas</title>
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="icon" href="img/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#14235C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul: #14235C;
+    --azul-claro: #1E3A8A;
+    --rojo: #A6192E;
+    --dorado: #C9A227;
+    --gris: #5B6270;
+    --paper: #fbfcfe;
+    --grid-line: #e4ecf7;
+    --ink: #21293c;
+    --ink-soft: #5b6478;
+    --muted: #8a92a6;
+    --card: #ffffff;
+    --card-border: #dfe4ee;
+    --marker: #f0d675;
+
+    /* colores de categoría */
+    --c-amarillo: #f5b301;
+    --c-naranja: #f2632c;
+    --c-rosa: #e64980;
+    --c-violeta: #7048e8;
+    --c-azul: #1971c2;
+    --c-verde: #2f9e44;
+    --c-teal: #0ca678;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 28px 28px;
+    color: var(--ink);
+    font-family: 'Instrument Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+
+  /* ============ ENCABEZADO DEL SITIO ============ */
+  .tricolor{display:flex;height:8px;width:100%}
+  .tricolor span:nth-child(1){flex:1;background:var(--azul)}
+  .tricolor span:nth-child(2){flex:1;background:#fff;border-top:1px solid #e5e7ee;border-bottom:1px solid #e5e7ee}
+  .tricolor span:nth-child(3){flex:2;background:var(--rojo)}
+  .tricolor span:nth-child(4){flex:1;background:#fff;border-top:1px solid #e5e7ee;border-bottom:1px solid #e5e7ee}
+  .tricolor span:nth-child(5){flex:1;background:var(--azul)}
+
+  .sitio-header{background:#fff;padding:2rem 1.5rem 1.4rem;text-align:center;border-bottom:1px solid var(--card-border)}
+  .logos{display:flex;justify-content:center;align-items:center;gap:clamp(1.2rem,4vw,3rem);flex-wrap:wrap;margin-bottom:1.4rem}
+  .logos img{height:80px;width:auto;object-fit:contain}
+  .logos img.mep{height:150px;order:0}
+  .logos img.escudo{order:-1}
+  .logos img.cotepecos{order:1}
+  .sitio-header h1{
+    font-family:'Libre Caslon Text',serif;color:var(--azul);
+    font-size:clamp(1.25rem,3vw,1.8rem);font-weight:700;line-height:1.3;
+    letter-spacing:0;max-width:none;
+  }
+  .sitio-header .sub{color:var(--gris);font-size:.9rem;letter-spacing:.14em;text-transform:uppercase;margin-top:.4rem;font-weight:600}
+
+  nav.menu-sitio{background:var(--azul);position:sticky;top:0;z-index:10;box-shadow:0 2px 10px rgba(20,35,92,.25)}
+  .nav-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:center;align-items:center;position:relative}
+  nav.menu-sitio ul{list-style:none;display:flex;justify-content:center;flex-wrap:wrap}
+  nav.menu-sitio a{
+    display:block;color:#fff;text-decoration:none;padding:.95rem 1.6rem;
+    font-family:'Source Sans 3',sans-serif;font-weight:600;letter-spacing:.05em;
+    font-size:.95rem;text-transform:uppercase;
+    border-bottom:3px solid transparent;transition:background .2s,border-color .2s;
+  }
+  nav.menu-sitio a:hover,nav.menu-sitio a:focus-visible{background:var(--azul-claro);border-bottom-color:var(--dorado);outline:none}
+  nav.menu-sitio a[aria-current="page"]{border-bottom-color:var(--dorado)}
+  .menu-toggle{display:none;background:none;border:none;cursor:pointer;padding:.85rem 1rem;margin-left:auto;box-shadow:none}
+  .menu-toggle .etiqueta{color:#fff;font-family:'Source Sans 3',sans-serif;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:.9rem;vertical-align:middle;margin-right:.65rem}
+  .menu-toggle .barras{display:inline-block;width:26px;height:20px;position:relative;vertical-align:middle}
+  .menu-toggle .barras span{position:absolute;left:0;width:100%;height:3px;background:#fff;border-radius:2px;transition:transform .3s,opacity .3s,top .3s}
+  .menu-toggle .barras span:nth-child(1){top:0}
+  .menu-toggle .barras span:nth-child(2){top:8.5px}
+  .menu-toggle .barras span:nth-child(3){top:17px}
+  nav.menu-sitio.abierto .barras span:nth-child(1){top:8.5px;transform:rotate(45deg)}
+  nav.menu-sitio.abierto .barras span:nth-child(2){opacity:0}
+  nav.menu-sitio.abierto .barras span:nth-child(3){top:8.5px;transform:rotate(-45deg)}
+  @media (max-width:900px){
+    .nav-inner{justify-content:flex-start}
+    .menu-toggle{display:block}
+    nav.menu-sitio ul{
+      position:absolute;top:100%;left:0;right:0;background:var(--azul);
+      flex-direction:column;box-shadow:0 10px 18px rgba(20,35,92,.3);
+      max-height:0;overflow:hidden;transition:max-height .35s ease;
+    }
+    nav.menu-sitio.abierto ul{max-height:320px}
+    nav.menu-sitio ul a{padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.12);border-left:4px solid transparent}
+    nav.menu-sitio ul a:hover,nav.menu-sitio ul a:focus-visible{border-bottom-color:rgba(255,255,255,.12);border-left-color:var(--dorado)}
+    nav.menu-sitio ul a[aria-current="page"]{border-bottom-color:rgba(255,255,255,.12);border-left-color:var(--dorado)}
+  }
+  @media (max-width:600px){
+    .logos{gap:1rem}
+    .logos img{height:64px}
+    .logos img.mep{height:120px;order:-2;flex-basis:100%}
+  }
+
+  .sitio-footer{background:var(--azul);color:#fff;text-align:center;padding:1.6rem 1rem;max-width:none;border-top:none;display:block}
+  .sitio-footer p{font-family:'Source Sans 3',sans-serif;font-size:.98rem;letter-spacing:.04em;color:#fff}
+  .sitio-footer .dorado{color:var(--dorado);font-weight:700}
+  .sitio-footer .fecha{
+    margin-top:.35rem;
+    font-size:.85rem;
+    color:#aeb8d8;
+    letter-spacing:.03em;
+    text-transform:capitalize;
+  }
+
+  /* ============ HEADER ============ */
+  header {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 3.5rem 2rem 0;
+  }
+
+  .eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: #fff;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    box-shadow: 3px 3px 0 var(--ink);
+    margin-bottom: 1.6rem;
+  }
+
+  .eyebrow .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--c-teal);
+    display: inline-block;
+  }
+
+  h1 {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.3rem, 5.6vw, 4.4rem);
+    line-height: 1.06;
+    letter-spacing: -0.025em;
+    max-width: 800px;
+  }
+
+  h1 .marker {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  h1 .marker::before {
+    content: '';
+    position: absolute;
+    left: -0.15em;
+    right: -0.15em;
+    top: 0.18em;
+    bottom: 0.02em;
+    background: var(--marker);
+    z-index: -1;
+    border-radius: 0.2em 0.5em 0.3em 0.6em;
+    transform: rotate(-0.8deg);
+  }
+
+  .subtitle {
+    margin-top: 1.3rem;
+    font-size: 1.02rem;
+    color: var(--ink-soft);
+    max-width: 520px;
+    line-height: 1.7;
+  }
+
+  .subtitle strong { color: var(--ink); font-weight: 600; }
+
+  /* ============ SEARCH ============ */
+  .search-wrap {
+    max-width: 1180px;
+    margin: 2.4rem auto 0;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    position: relative;
+    flex: 1;
+    min-width: 260px;
+    max-width: 480px;
+  }
+
+  .search-input {
+    width: 100%;
+    background: #fff;
+    border: 1.5px solid var(--ink);
+    border-radius: 12px;
+    padding: 0.85rem 1.1rem 0.85rem 2.9rem;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--ink);
+    outline: none;
+    box-shadow: 3px 3px 0 var(--ink);
+    transition: box-shadow 0.15s, transform 0.15s;
+  }
+
+  .search-input::placeholder { color: var(--muted); }
+
+  .search-input:focus {
+    box-shadow: 5px 5px 0 var(--c-violeta);
+    transform: translate(-1px, -1px);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--ink-soft);
+    display: flex;
+  }
+
+  .tool-count {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+  }
+
+  .tool-count b { color: var(--ink); }
+
+  /* ============ GRID ============ */
+  .grid-wrap {
+    max-width: 1180px;
+    margin: 2.8rem auto 4.5rem;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem 1.5rem;
+  }
+
+  /* ============ CARDS (fichas) ============ */
+  .card {
+    background: var(--card);
+    border: 1.5px solid var(--card-border);
+    border-radius: 14px;
+    padding: 2rem 1.5rem 1.3rem;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(33, 41, 60, 0.05);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    animation: fadeUp 0.45s ease both;
+  }
+
+  .card:nth-child(odd)  { transform: rotate(-0.7deg); }
+  .card:nth-child(even) { transform: rotate(0.6deg); }
+
+  .card:hover, .card:focus-visible {
+    transform: rotate(0deg) translateY(-5px);
+    border-color: var(--card-accent);
+    box-shadow: 0 14px 30px -8px color-mix(in srgb, var(--card-accent) 35%, transparent);
+    z-index: 2;
+  }
+
+  .card:focus-visible {
+    outline: 3px solid var(--card-accent);
+    outline-offset: 3px;
+  }
+
+  /* cinta adhesiva */
+  .tape {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    width: 96px;
+    height: 26px;
+    transform: translateX(-50%) rotate(-2.5deg);
+    background:
+      repeating-linear-gradient(45deg,
+        rgba(255,255,255,0.22) 0 6px,
+        transparent 6px 12px),
+      var(--card-accent);
+    opacity: 0.88;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(33,41,60,0.12);
+  }
+
+  .card:nth-child(3n) .tape { transform: translateX(-50%) rotate(2deg); }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+  }
+
+  .card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: color-mix(in srgb, var(--card-accent) 12%, #fff);
+    border: 1.5px solid color-mix(in srgb, var(--card-accent) 35%, transparent);
+  }
+
+  .card-arrow {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: var(--ink);
+    background: #fff;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .card:hover .card-arrow {
+    background: var(--ink);
+    color: #fff;
+    transform: rotate(-45deg);
+  }
+
+  .card-body { flex: 1; }
+
+  .card-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--card-accent);
+    margin-bottom: 0.4rem;
+  }
+
+  .card-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.18rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .card-desc {
+    font-size: 0.86rem;
+    color: var(--ink-soft);
+    line-height: 1.65;
+    margin-top: 0.45rem;
+  }
+
+  .card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding-top: 0.85rem;
+    border-top: 1.5px dashed var(--card-border);
+  }
+
+  .card-pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    padding: 0.22rem 0.65rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--card-accent) 10%, #fff);
+    color: color-mix(in srgb, var(--card-accent) 75%, var(--ink));
+    border: 1px solid color-mix(in srgb, var(--card-accent) 25%, transparent);
+  }
+
+  .card.hidden { display: none; }
+
+  .no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 1rem;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    display: none;
+  }
+
+  .no-results .big {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--ink);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.8rem 2rem 2.5rem;
+    border-top: 1.5px dashed var(--card-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+
+  footer .credit strong { color: var(--ink); font-weight: 600; }
+
+  footer .mono {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ============ ANIMACIONES ============ */
+  @keyframes fadeUp {
+    from { opacity: 0; translate: 0 18px; }
+    to   { opacity: 1; translate: 0 0; }
+  }
+
+  .card:nth-child(1)  { animation-delay: 0.04s; }
+  .card:nth-child(2)  { animation-delay: 0.08s; }
+  .card:nth-child(3)  { animation-delay: 0.12s; }
+  .card:nth-child(4)  { animation-delay: 0.16s; }
+  .card:nth-child(5)  { animation-delay: 0.20s; }
+  .card:nth-child(6)  { animation-delay: 0.24s; }
+  .card:nth-child(7)  { animation-delay: 0.28s; }
+  .card:nth-child(8)  { animation-delay: 0.32s; }
+  .card:nth-child(9)  { animation-delay: 0.36s; }
+  .card:nth-child(10) { animation-delay: 0.40s; }
+  .card:nth-child(11) { animation-delay: 0.44s; }
+  .card:nth-child(12) { animation-delay: 0.48s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card { animation: none; }
+    .card, .card:hover { transition: none; transform: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 640px) {
+    header { padding: 2.2rem 1.2rem 0; }
+    .search-wrap { padding: 0 1.2rem; }
+    .grid-wrap { padding: 0 1.2rem; grid-template-columns: 1fr; gap: 1.8rem; }
+    footer { padding: 1.5rem 1.2rem 2rem; justify-content: center; text-align: center; }
+    .card:nth-child(odd), .card:nth-child(even) { transform: rotate(0deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="tricolor" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+
+<div class="sitio-header">
+  <div class="logos">
+    <img src="img/escudo.jpg" alt="Escudo del Colegio Técnico Profesional de Educación Comercial y de Servicios, 1978" class="escudo">
+    <img src="img/mep.jpg" alt="Ministerio de Educación Pública, Gobierno de Costa Rica" class="mep">
+    <img src="img/cotepecos.jpg" alt="COTEPECOS · Emprendimiento e Innovación MEP" class="cotepecos">
+  </div>
+  <h1>Emprendimiento e Innovación</h1>
+  <p class="sub">Colegio Técnico Profesional de Educación Comercial y de Servicios</p>
+</div>
+
+<nav class="menu-sitio" id="menu" aria-label="Menú principal">
+  <div class="nav-inner">
+    <button class="menu-toggle" id="botonMenu" aria-expanded="false" aria-controls="listaMenu">
+      <span class="etiqueta">Menú</span>
+      <span class="barras" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+    <ul id="listaMenu">
+      <li><a href="index.html">Página principal</a></li>
+      <li><a href="herramientas.html" aria-current="page">Herramientas</a></li>
+      <li><a href="materiales.html">Materiales</a></li>
+      <li><a href="expotecnica.html">Expotécnica 2026</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header>
+  <p class="eyebrow"><span class="dot"></span>Caja de herramientas · PEI</p>
+  <h1>Herramientas para <span class="marker">Emprendimiento</span> e Innovación</h1>
+  <p class="subtitle">Innovación, estrategia, finanzas y análisis en un solo lugar. <strong>Elija una ficha y manos a la obra.</strong></p>
+</header>
+
+<div class="search-wrap">
+  <div class="search-box">
+    <span class="search-icon">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+    </span>
+    <input type="text" class="search-input" id="searchInput" placeholder="Buscar herramienta… (ej. costos, canvas, FODA)" aria-label="Buscar herramienta">
+  </div>
+  <p class="tool-count" id="toolCount"><b>12</b> herramientas</p>
+</div>
+
+<div class="grid-wrap" id="grid">
+
+  <!-- 1. Calculadora Costos -->
+  <a class="card" href="herramientas/calculadoracostos.html" style="--card-accent:var(--c-verde)" data-tags="calculadora costos precio finanzas dinero margenes">
+    <span class="tape"></span>
+    <div class="card-top">
+      <div class="card-icon">💰</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="card-body">
+      <p class="card-tag">Finanzas</p>
+      <h2 class="card-title">Calculadora Universal de Costos</h2>
+      <p class="card-desc">Calcula costos, precios de venta y márgenes de ganancia de forma rápida y visual.</p>
+    </div>
+    <div class="card-footer">
+      <span class="card-pill">Cálculo</span>
+      <span class="card-pill">Márgenes</span>
+    </div>
+  </a>
+
+  <!-- 2. Modelo Canvas -->
+  <a class="card" href="herramientas/canvas.html" style="--card-accent:var(--c-violeta)" data-tags="canvas modelo negocio propuesta valor emprendimiento bmc">
+    <span class="tape"></span>
+    <div class="card-top">
+      <div class="card-icon">🗂️</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="card-body">
+      <p class="card-tag">Estrategia</p>
+      <h2 class="card-title">Modelo Canvas de Negocio</h2>
+      <p class="card-desc">Diseña y visualiza el modelo de negocio de tu empresa en un lienzo interactivo.</p>
+    </div>
+    <div class="card-footer">
+      <span class="card-pill">Lienzo</span>
+      <span class="card-pill">BMC</span>
+    </div>
+  </a>
+
+  <!-- 3. CarreTica -->
+  <a class="card" href="herramientas/carretica.html" style="--card-accent:var(--c-naranja)" data-tags="carretica costos precio emprendimiento costa rica">
+    <span class="tape"></span>
+    <div class="card-top">
+      <div class="card-icon">🛒</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="card-body">
+      <p class="card-tag">Emprendimiento</p>
+      <h2 class="card-title">La CarreTica</h2>
+      <p class="card-desc">Calculadora de costos local adaptada para emprendedores costarricenses.</p>
+    </div>
+    <div class="card-footer">
+      <span class="card-pill">Local</span>
+      <span class="card-pill">Precios</span>
+    </div>
+  </a>
+
+  <!-- 4. Design Thinking -->
+  <a class="card" href="herramientas/desingthinking.html" style="--card-accent:var(--c-teal)" data-tags="design thinking innovacion empatia prototipo ideacion">
+    <span class="tape"></span>
+    <div class="card-top">
+      <div class="card-icon">🎨</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="card-body">
+      <p class="card-tag">Innovación</p>
+      <h2 class="card-title">Design Thinking Hub</h2>
+      <p class="card-desc">Recorre las 5 fases del Design Thinking para resolver problemas centrados en el usuario.</p>
+    </div>
+    <div class="card-footer">
+      <span class="card-pill">Empatía</span>
+      <span class="card-pill">Prototipo</span>
+      <span class="card-pill">Test</span>
+    </div>
+  </a>
+
+  <!-- 5. Negociación Quiz -->
+  <a class="card" href="herramientas/negociacion.html" style="--card-accent:var(--c-rosa)" data-tags="negociacion quiz grupos habilidades comunicacion">
+    <span class="tape"></span>
+    <div class="card-top">
+      <div class="card-icon">🤝</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="card-body">
+      <p class="card-tag">Comunicación</p>
+      <h2 class="card-title">Quiz de Negociación</h2>
+      <p class="card-desc">Evalúa y desarrolla tus capacidades de negociación mediante un quiz grupal dinámico.</p>
+    </div>
+    <div class="card-footer">
+      <span class="card-pill">Quiz</span>
+      <span class="card-pill">Grupos</span>
+    </div>
+  </a>
+
+  <!-- 6. PESTEL / FODA -->
+  <a class="card" href="herramientas/pestel_foda.html" style="--card-accent:var(--c-azul)" data-tags="pestel foda analisis estrategico fortalezas debilidades oportunidades amenazas">
+    <span class="tape"></span>
+    <div class="card-top">
+      <div class="card-icon">📊</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="card-body">
+      <p class="card-tag">Análisis</p>
+      <h2 class="card-title">PESTEL &amp; FODA/FARO</h2>
+      <p class="card-desc">Herramientas de análisis estratégico interno y externo para tu organización.</p>
+    </div>
+    <div class="card-footer">
+      <span class="card-pill">FODA</span>
+      <span class="card-pill">PESTEL</span>
+      <span class="card-pill">FARO</span>
+    </div>
+  </a>
+
+  <!-- 7. PMV -->
+  <a class="card" href="herramientas/pmv.html" style="--card-accent:var(--c-amarillo)" data-tags="pmv mvp producto minimo viable lean startup validacion">
+    <span class="tape"></span>
+    <div class="card-top">
+      <div class="card-icon">🚀</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="card-body">
+      <p class="card-tag">Lean Startup</p>
+      <h2 class="card-title">Creador de PMV</h2>
+      <p class="card-desc">Crea y valida tu Producto Mínimo Viable de forma guiada paso a paso.</p>
+    </div>
+    <div class="card-footer">
+      <span class="card-pill">MVP</span>
+      <span class="card-pill">Validación</span>
+    </div>
+  </a>
+
+  <!-- 8. Ruleta -->
+  <a class="card" href="herramientas/ruleta.html" style="--card-accent:var(--c-teal)" data-tags="ruleta participantes dinamica grupo aleatorio juego">
+    <span class="tape"></span>
+    <div class="card-top">
+      <div class="card-icon">🎡</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="card-body">
+      <p class="card-tag">Dinámica</p>
+      <h2 class="card-title">Ruleta de Participantes</h2>
+      <p class="card-desc">Selecciona participantes al azar con una ruleta interactiva para dinamizar tu clase o taller.</p>
+    </div>
+    <div class="card-footer">
+      <span class="card-pill">Azar</span>
+      <span class="card-pill">Dinámica</span>
+    </div>
+  </a>
+
+  <!-- 9. SCAMPER Ejercicio -->
+  <a class="card" href="herramientas/scamperejer.html" style="--card-accent:var(--c-rosa)" data-tags="scamper lienzo creatividad innovacion ejercicio sustituir combinar">
+    <span class="tape"></span>
+    <div class="card-top">
+      <div class="card-icon">💡</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="card-body">
+      <p class="card-tag">Creatividad</p>
+      <h2 class="card-title">Lienzo SCAMPER</h2>
+      <p class="card-desc">Usa la técnica SCAMPER para generar ideas innovadoras sobre productos o servicios.</p>
+    </div>
+    <div class="card-footer">
+      <span class="card-pill">Ideación</span>
+      <span class="card-pill">SCAMPER</span>
+    </div>
+  </a>
+
+  <!-- 10. SCAMPER Juego -->
+  <a class="card" href="herramientas/scamperexp.html" style="--card-accent:var(--c-azul)" data-tags="scamper juego clasificacion interactivo creatividad gamificacion">
+    <span class="tape"></span>
+    <div class="card-top">
+      <div class="card-icon">🎮</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="card-body">
+      <p class="card-tag">Gamificación</p>
+      <h2 class="card-title">Juego SCAMPER</h2>
+      <p class="card-desc">Versión lúdica del método SCAMPER: clasifica ideas en las categorías correctas.</p>
+    </div>
+    <div class="card-footer">
+      <span class="card-pill">Juego</span>
+      <span class="card-pill">Clasificación</span>
+    </div>
+  </a>
+
+  <!-- 11. Mapa de Empatía -->
+  <a class="card" href="herramientas/mapa_empatia.html" style="--card-accent:var(--c-naranja)" data-tags="mapa empatia usuario cliente diseño thinking">
+    <span class="tape"></span>
+    <div class="card-top">
+      <div class="card-icon">🧠</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="card-body">
+      <p class="card-tag">Innovación</p>
+      <h2 class="card-title">Mapa de Empatía</h2>
+      <p class="card-desc">Comprende a tu cliente ideal explorando qué piensa, siente, ve y escucha.</p>
+    </div>
+    <div class="card-footer">
+      <span class="card-pill">Usuario</span>
+      <span class="card-pill">Empatía</span>
+    </div>
+  </a>
+
+  <!-- 12. EcoCalcula CR -->
+  <a class="card" href="herramientas/calculadoraEnergia.html" style="--card-accent:var(--c-verde)" data-tags="energia electricidad calculadora cnfl tarifas sostenibilidad">
+    <span class="tape"></span>
+    <div class="card-top">
+      <div class="card-icon">⚡</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="card-body">
+      <p class="card-tag">Sostenibilidad</p>
+      <h2 class="card-title">EcoCalcula CR</h2>
+      <p class="card-desc">Calcula tu consumo eléctrico mensual y el costo según la tarifa residencial de la CNFL.</p>
+    </div>
+    <div class="card-footer">
+      <span class="card-pill">Energía</span>
+      <span class="card-pill">CNFL</span>
+      <span class="card-pill">Sostenibilidad</span>
+    </div>
+  </a>
+
+  <p class="no-results" id="noResults">
+    <span class="big">Sin resultados</span>
+    Intente con otra palabra, por ejemplo «costos», «canvas» o «FODA».
+  </p>
+
+</div>
+
+<footer>
+  <p class="credit">Herramientas para Emprendimiento e Innovación · <strong>Roberto Mora Castro</strong></p>
+  <p class="mono">COTEPECOS · Educación Comercial y de Servicios</p>
+</footer>
+
+<div class="tricolor" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+
+<footer class="sitio-footer">
+  <p><span class="dorado">PEI. Lic Roberto Mora Castro</span></p>
+  <p class="fecha" id="fechaHoy"></p>
+</footer>
+
+<script>
+  const menuSitio = document.getElementById('menu');
+  const botonMenu = document.getElementById('botonMenu');
+  botonMenu.addEventListener('click', () => {
+    const abierto = menuSitio.classList.toggle('abierto');
+    botonMenu.setAttribute('aria-expanded', abierto);
+  });
+  document.querySelectorAll('#listaMenu a').forEach(a => a.addEventListener('click', () => {
+    menuSitio.classList.remove('abierto'); botonMenu.setAttribute('aria-expanded','false');
+  }));
+  document.addEventListener('click', e => {
+    if (menuSitio.classList.contains('abierto') && !menuSitio.contains(e.target)) {
+      menuSitio.classList.remove('abierto'); botonMenu.setAttribute('aria-expanded','false');
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && menuSitio.classList.contains('abierto')) {
+      menuSitio.classList.remove('abierto'); botonMenu.setAttribute('aria-expanded','false'); botonMenu.focus();
+    }
+  });
+</script>
+
+<script>
+  const input = document.getElementById('searchInput');
+  const cards = Array.from(document.querySelectorAll('.card'));
+  const noResults = document.getElementById('noResults');
+  const toolCount = document.getElementById('toolCount');
+  const total = cards.length;
+
+  function normalizar(t) {
+    return t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  }
+
+  input.addEventListener('input', () => {
+    const q = normalizar(input.value.trim());
+    let visibles = 0;
+
+    cards.forEach(card => {
+      const texto = normalizar(
+        card.textContent + ' ' + (card.dataset.tags || '')
+      );
+      const match = q === '' || texto.includes(q);
+      card.classList.toggle('hidden', !match);
+      if (match) visibles++;
+    });
+
+    noResults.style.display = visibles === 0 ? 'block' : 'none';
+    toolCount.innerHTML = q === ''
+      ? `<b>${total}</b> herramientas`
+      : `<b>${visibles}</b> de ${total}`;
+  });
+
+  // Fecha del día en el pie de página
+  document.getElementById('fechaHoy').textContent =
+    new Date().toLocaleDateString('es-CR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+</script>
+
+</body>
+</html>

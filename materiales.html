@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COTE EMPRENDE - Materiales</title>
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="icon" href="img/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#14235C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --azul:#14235C;
+    --azul-claro:#1E3A8A;
+    --rojo:#A6192E;
+    --dorado:#C9A227;
+    --tinta:#22283A;
+    --gris:#5B6270;
+    --fondo:#FFFFFF;
+    --crema:#F7F8FB;
+    --borde:#E3E6EF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--fondo);
+    color:var(--tinta);
+    font-family:'Source Sans 3',system-ui,sans-serif;
+    line-height:1.7;
+    font-size:1.05rem;
+  }
+  .tricolor{display:flex;height:8px;width:100%}
+  .tricolor span:nth-child(1){flex:1;background:var(--azul)}
+  .tricolor span:nth-child(2){flex:1;background:#fff;border-top:1px solid #e5e7ee;border-bottom:1px solid #e5e7ee}
+  .tricolor span:nth-child(3){flex:2;background:var(--rojo)}
+  .tricolor span:nth-child(4){flex:1;background:#fff;border-top:1px solid #e5e7ee;border-bottom:1px solid #e5e7ee}
+  .tricolor span:nth-child(5){flex:1;background:var(--azul)}
+
+  header{
+    background:#fff;
+    padding:2rem 1.5rem 1.4rem;
+    text-align:center;
+  }
+  .logos{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:clamp(1.2rem,4vw,3rem);
+    flex-wrap:wrap;
+    margin-bottom:1.4rem;
+  }
+  .logos img{height:80px;width:auto;object-fit:contain}
+  .logos img.mep{height:150px;order:0}
+  .logos img.escudo{order:-1}
+  .logos img.cotepecos{order:1}
+  header h1{
+    font-family:'Libre Caslon Text',serif;
+    color:var(--azul);
+    font-size:clamp(1.25rem,3vw,1.8rem);
+    font-weight:700;
+    line-height:1.3;
+  }
+  header .sub{
+    color:var(--gris);
+    font-size:.9rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    margin-top:.4rem;
+    font-weight:600;
+  }
+
+  nav{
+    background:var(--azul);
+    position:sticky;top:0;z-index:10;
+    box-shadow:0 2px 10px rgba(20,35,92,.25);
+  }
+  .nav-inner{
+    max-width:1100px;margin:0 auto;
+    display:flex;justify-content:center;align-items:center;position:relative;
+  }
+  nav ul{list-style:none;display:flex;justify-content:center;flex-wrap:wrap}
+  nav a{
+    display:block;color:#fff;text-decoration:none;
+    padding:.95rem 1.6rem;font-weight:600;letter-spacing:.05em;
+    font-size:.95rem;text-transform:uppercase;
+    border-bottom:3px solid transparent;
+    transition:background .2s,border-color .2s;
+  }
+  nav a:hover,nav a:focus-visible{
+    background:var(--azul-claro);border-bottom-color:var(--dorado);outline:none;
+  }
+  nav a[aria-current="page"]{border-bottom-color:var(--dorado)}
+
+  .menu-toggle{
+    display:none;background:none;border:none;cursor:pointer;
+    padding:.85rem 1rem;margin-left:auto;
+  }
+  .menu-toggle .etiqueta{
+    color:#fff;font-family:'Source Sans 3',sans-serif;font-weight:600;
+    letter-spacing:.08em;text-transform:uppercase;font-size:.9rem;
+    vertical-align:middle;margin-right:.65rem;
+  }
+  .menu-toggle .barras{display:inline-block;width:26px;height:20px;position:relative;vertical-align:middle}
+  .menu-toggle .barras span{
+    position:absolute;left:0;width:100%;height:3px;background:#fff;border-radius:2px;
+    transition:transform .3s,opacity .3s,top .3s;
+  }
+  .menu-toggle .barras span:nth-child(1){top:0}
+  .menu-toggle .barras span:nth-child(2){top:8.5px}
+  .menu-toggle .barras span:nth-child(3){top:17px}
+  nav.abierto .barras span:nth-child(1){top:8.5px;transform:rotate(45deg)}
+  nav.abierto .barras span:nth-child(2){opacity:0}
+  nav.abierto .barras span:nth-child(3){top:8.5px;transform:rotate(-45deg)}
+
+  @media (max-width:900px){
+    .nav-inner{justify-content:flex-start}
+    .menu-toggle{display:block}
+    nav ul{
+      position:absolute;top:100%;left:0;right:0;background:var(--azul);
+      flex-direction:column;box-shadow:0 10px 18px rgba(20,35,92,.3);
+      max-height:0;overflow:hidden;transition:max-height .35s ease;
+    }
+    nav.abierto ul{max-height:320px}
+    nav ul a{
+      padding:1rem 1.5rem;
+      border-bottom:1px solid rgba(255,255,255,.12);
+      border-left:4px solid transparent;
+    }
+    nav ul a:hover,nav ul a:focus-visible{
+      border-bottom-color:rgba(255,255,255,.12);
+      border-left-color:var(--dorado);
+    }
+    nav ul a[aria-current="page"]{
+      border-bottom-color:rgba(255,255,255,.12);
+      border-left-color:var(--dorado);
+    }
+  }
+
+  main{
+    max-width:960px;
+    margin:0 auto;
+    padding:3rem 1.5rem 4rem;
+  }
+  .intro{text-align:center}
+  .intro h2{
+    font-family:'Libre Caslon Text',serif;
+    color:var(--azul);
+    font-size:clamp(2rem,5vw,2.8rem);
+    margin-bottom:.4rem;
+  }
+  .intro .filete{width:72px;height:4px;background:var(--dorado);margin:0 auto 1.4rem;border-radius:2px}
+  .intro p{color:var(--tinta);max-width:70ch;margin:0 auto 2.5rem}
+
+  /* Acordeones de materiales */
+  .seccion{
+    border-bottom:1px solid var(--borde);
+  }
+  .seccion:first-of-type{border-top:1px solid var(--borde)}
+  .seccion summary{
+    list-style:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:.9rem;
+    position:relative;
+    padding:1.7rem 3rem;
+    text-align:center;
+    transition:background .2s;
+  }
+  .seccion summary::-webkit-details-marker{display:none}
+  .seccion summary h3{
+    font-family:'Libre Caslon Text',serif;
+    color:var(--azul);
+    font-size:clamp(1.2rem,2.8vw,1.55rem);
+    font-weight:700;
+    line-height:1.35;
+  }
+  .seccion summary .flecha{
+    position:absolute;
+    right:1rem;top:50%;
+    width:14px;height:14px;
+    border-right:2.5px solid var(--azul);
+    border-bottom:2.5px solid var(--azul);
+    transform:translateY(-70%) rotate(45deg);
+    transition:transform .3s;
+  }
+  .seccion[open] summary .flecha{transform:translateY(-30%) rotate(-135deg)}
+  .seccion summary:hover,.seccion summary:focus-visible{
+    background:var(--crema);
+    outline:none;
+  }
+  .seccion[open] summary h3{color:var(--azul-claro)}
+  .contenido{
+    padding:.4rem .5rem 2.2rem;
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .seccion[open] .contenido{animation:desplegar .35s ease both}
+    @keyframes desplegar{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  }
+
+  .btn-carpeta{
+    display:inline-block;
+    background:var(--azul);
+    color:#fff;
+    text-decoration:none;
+    font-weight:600;
+    padding:.65rem 1.3rem;
+    border-radius:6px;
+    margin-bottom:1.4rem;
+    transition:background .2s;
+  }
+  .btn-carpeta:hover,.btn-carpeta:focus-visible{background:var(--azul-claro);outline:none}
+  .btn-carpeta::before{content:"📂";margin-right:.5rem}
+
+  .unidades{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:1.2rem;
+  }
+  .unidad{
+    background:var(--crema);
+    border:1px solid var(--borde);
+    border-top:4px solid var(--dorado);
+    border-radius:8px;
+    padding:1.2rem 1.3rem 1.3rem;
+  }
+  .unidad h4{
+    color:var(--azul);
+    font-size:1.05rem;
+    line-height:1.4;
+    margin-bottom:.8rem;
+  }
+  .unidad h4 .num{
+    display:block;
+    font-size:.75rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--dorado);
+    font-weight:700;
+  }
+  .unidad ul{list-style:none}
+  .unidad li + li{margin-top:.35rem}
+  .unidad a{
+    display:block;
+    color:var(--azul-claro);
+    text-decoration:none;
+    padding:.45rem .6rem;
+    border-radius:5px;
+    font-weight:600;
+    font-size:.97rem;
+    transition:background .15s,color .15s;
+  }
+  .unidad a:hover,.unidad a:focus-visible{
+    background:var(--azul);color:#fff;outline:none;
+  }
+  .unidad a::before{content:"›";margin-right:.5rem;color:var(--dorado);font-weight:700}
+  .unidad a:hover::before,.unidad a:focus-visible::before{color:#fff}
+
+  footer{background:var(--azul);color:#fff;text-align:center;padding:1.6rem 1rem}
+  footer p{font-size:.98rem;letter-spacing:.04em}
+  footer .dorado{color:var(--dorado);font-weight:700}
+  footer .fecha{
+    margin-top:.35rem;
+    font-size:.85rem;
+    color:#aeb8d8;
+    letter-spacing:.03em;
+    text-transform:capitalize;
+  }
+
+  @media (max-width:600px){
+    .logos{gap:1rem}
+    .logos img{height:64px}
+    .logos img.mep{height:120px;order:-2;flex-basis:100%}
+  }
+  /* ── Animaciones sutiles ── */
+  @media (prefers-reduced-motion:no-preference){
+    .logos img{animation:aparecer .8s ease both}
+    .logos img.escudo{animation-delay:.1s}
+    .logos img.cotepecos{animation-delay:.2s}
+    header h1{animation:aparecer .8s ease .25s both}
+    header .sub{animation:aparecer .8s ease .35s both}
+    .intro h2{animation:aparecer .7s ease both}
+    .intro .filete{transform-origin:center;animation:crecer .8s ease .25s both}
+    .intro p{animation:aparecer .7s ease .3s both}
+    @keyframes crecer{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+    @keyframes aparecer{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+    .revelar{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+    .revelar.visible{opacity:1;transform:none}
+
+    /* Las tarjetas de unidades entran escalonadas al abrir cada sección */
+    .seccion[open] .unidad{animation:aparecer .5s ease both}
+    .seccion[open] .unidad:nth-child(1){animation-delay:.05s}
+    .seccion[open] .unidad:nth-child(2){animation-delay:.12s}
+    .seccion[open] .unidad:nth-child(3){animation-delay:.19s}
+    .seccion[open] .unidad:nth-child(4){animation-delay:.26s}
+  }
+  /* Las tarjetas se elevan levemente con el cursor */
+  .unidad{transition:transform .25s ease,box-shadow .25s ease}
+  .unidad:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(20,35,92,.1)}
+  /* La flecha del acordeón acompaña el cursor */
+  .seccion summary:hover .flecha{border-color:var(--dorado)}
+  @media (prefers-reduced-motion:reduce){
+    nav ul{transition:none}
+    .menu-toggle .barras span{transition:none}
+  }
+
+  /* ── Partículas decorativas flotantes ── */
+  .particulas{
+    position:fixed;inset:0;
+    pointer-events:none;
+    z-index:0;
+    overflow:hidden;
+  }
+  .particulas span{
+    position:absolute;
+    bottom:-20px;
+    border-radius:50%;
+    opacity:0;
+  }
+  /* doradas */
+  .particulas span:nth-child(odd){background:var(--dorado)}
+  /* azules */
+  .particulas span:nth-child(even){background:var(--azul-claro)}
+  @media (prefers-reduced-motion:no-preference){
+    .particulas span{animation:flotar linear infinite}
+    @keyframes flotar{
+      0%{transform:translateY(0) translateX(0);opacity:0}
+      10%{opacity:var(--op)}
+      90%{opacity:var(--op)}
+      100%{transform:translateY(-110vh) translateX(var(--sway));opacity:0}
+    }
+  }
+  .particulas span:nth-child(1){left:8%;width:5px;height:5px;--op:.25;--sway:30px;animation-duration:22s;animation-delay:0s}
+  .particulas span:nth-child(2){left:19%;width:4px;height:4px;--op:.18;--sway:-24px;animation-duration:28s;animation-delay:4s}
+  .particulas span:nth-child(3){left:31%;width:6px;height:6px;--op:.22;--sway:20px;animation-duration:25s;animation-delay:8s}
+  .particulas span:nth-child(4){left:43%;width:3px;height:3px;--op:.2;--sway:-32px;animation-duration:30s;animation-delay:2s}
+  .particulas span:nth-child(5){left:55%;width:5px;height:5px;--op:.24;--sway:26px;animation-duration:24s;animation-delay:11s}
+  .particulas span:nth-child(6){left:67%;width:4px;height:4px;--op:.16;--sway:-18px;animation-duration:27s;animation-delay:6s}
+  .particulas span:nth-child(7){left:78%;width:6px;height:6px;--op:.22;--sway:34px;animation-duration:23s;animation-delay:14s}
+  .particulas span:nth-child(8){left:88%;width:4px;height:4px;--op:.18;--sway:-26px;animation-duration:29s;animation-delay:9s}
+  .particulas span:nth-child(9){left:14%;width:3px;height:3px;--op:.2;--sway:22px;animation-duration:26s;animation-delay:17s}
+  .particulas span:nth-child(10){left:61%;width:3px;height:3px;--op:.17;--sway:-20px;animation-duration:31s;animation-delay:13s}
+  .particulas span:nth-child(11){left:25%;width:5px;height:5px;--op:.21;--sway:28px;animation-duration:24s;animation-delay:19s}
+  .particulas span:nth-child(12){left:94%;width:5px;height:5px;--op:.23;--sway:-22px;animation-duration:27s;animation-delay:3s}
+
+  /* El contenido va por encima de las partículas */
+  header,nav,main,footer,.tricolor{position:relative;z-index:1}
+</style>
+</head>
+<body>
+
+<div class="particulas" aria-hidden="true">
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+  <span></span><span></span><span></span><span></span><span></span><span></span>
+</div>
+
+<div class="tricolor" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+
+<header>
+  <div class="logos">
+    <img src="img/escudo.jpg" alt="Escudo del Colegio Técnico Profesional de Educación Comercial y de Servicios, 1978" class="escudo">
+    <img src="img/mep.jpg" alt="Ministerio de Educación Pública, Gobierno de Costa Rica" class="mep">
+    <img src="img/cotepecos.jpg" alt="COTEPECOS · Emprendimiento e Innovación MEP" class="cotepecos">
+  </div>
+  <h1>Emprendimiento e Innovación</h1>
+  <p class="sub">Colegio Técnico Profesional de Educación Comercial y de Servicios</p>
+</header>
+
+<nav id="menu" aria-label="Menú principal">
+  <div class="nav-inner">
+    <button class="menu-toggle" id="botonMenu" aria-expanded="false" aria-controls="listaMenu">
+      <span class="etiqueta">Menú</span>
+      <span class="barras" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+    <ul id="listaMenu">
+      <li><a href="index.html">Página principal</a></li>
+      <li><a href="herramientas.html">Herramientas</a></li>
+      <li><a href="materiales.html" aria-current="page">Materiales</a></li>
+      <li><a href="expotecnica.html">Expotécnica 2026</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+  <section class="intro">
+    <h2>Materiales</h2>
+    <div class="filete" aria-hidden="true"></div>
+    <p>En este espacio encontrará materiales, teoría, presentaciones y actividades por resultado de aprendizaje, además, de actividades complementarias (películas y otros).</p>
+  </section>
+
+  <!-- ══════════ Sección 1 ══════════ -->
+  <details class="seccion revelar">
+    <summary><h3>Ejecutivo Comercial, Secretariado Ejecutivo, Desarrollo Web</h3><span class="flecha" aria-hidden="true"></span></summary>
+    <div class="contenido">
+
+    <a class="btn-carpeta" href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgCqPNjZ8TTDT62ePzh16hNvAabv6E7WVrGW2OtdpQ75ZKc?e=2KfPty">Actividades para los primeros días</a>
+
+    <div class="unidades">
+      <article class="unidad">
+        <h4><span class="num">Unidad N° 1</span>Oportunidades de Negocio</h4>
+        <ul>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgB9QUeVpf6NTqElmvWkg_z0AUkxBWaluZHHMKsS8xcLEIE?e=gV4SpE">Resultado de aprendizaje 1</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgDkj8TEzPCrRok3tHUC3-YnAddePoR-iiK8Gm6TewzzZ04?e=nSPhHe">Resultado de aprendizaje 2</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgBITV0XJHWWRZmW9e-MJsbVAQmUArfmK6nlVcV_chryrx8?e=wJmAaM">Resultado de aprendizaje 3</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgBsFDpLtHXMT7TZxHkDTnsDAUHUlXZit9UDNBDuwhBJ8Ec?e=ZA0rHs">Resultado de aprendizaje 4</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgCGdPCgwAHhRrG8pCZmvVkpAe6WhAbcxsZpKXIMgCMKz7o?e=z4YmhT">Resultado de aprendizaje 5</a></li>
+        </ul>
+      </article>
+
+      <article class="unidad">
+        <h4><span class="num">Unidad N° 2</span>Modelo de Negocios</h4>
+        <ul>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgC_8DZmPBQaRaz5gPBX7fbuAZQQMYBaApqY4zmK1guBuGw?e=eDe6d4">Resultado de aprendizaje 1</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgAZJxU6BvA-TqdXUwi-Wx5-Ab-lOZBFP76sdzQP9Vzm58I?e=IZcdOX">Resultado de aprendizaje 2</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgDiG1bmrTvvTLsekTaHmYBSAQtG73fDzUkVTWFeoZsx4hE?e=KwbZnz">Resultado de aprendizaje 3</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgCe9Wg0WLFdRIDr4q3xk3NDAYReV1VfdZ2IShT_sCyTtL0?e=Ffz8qB">Resultado de aprendizaje 4</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgDYZJ8mrlRBS6QosJ970Bp0Aclh7xXZF1pUYL52J56-wok?e=jthEf9">Resultado de aprendizaje 5</a></li>
+        </ul>
+      </article>
+
+      <article class="unidad">
+        <h4><span class="num">Unidad N° 3</span>Creación de empresas</h4>
+        <ul>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgA3sPamo1BWRKFV-2L3_crdAe1Fv4lkUMxAh05f8-RUakE?e=PhO02f">Resultado de aprendizaje 1</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgAucRWMsSVAQ6cIdCAd5syJAVVE8uR42GQMOksz24lCPxk?e=5tTr95">Resultado de aprendizaje 2</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgDErWIr8W1yQ7sa_XaIu1BaAS0gnmtskCxl6rJJJ0jmLIs?e=COTaaS">Resultado de aprendizaje 3</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgD1JvHGXrj_QL9fm7UA6jwBAY-AiyTHKaSJoKZPLBdf-2I?e=RLHSxk">Resultado de aprendizaje 4</a></li>
+        </ul>
+      </article>
+
+      <article class="unidad">
+        <h4><span class="num">Unidad N° 4</span>Plan de Vida</h4>
+        <ul>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgCl3YKPJf01QLpGL4HpCZKvAb7bXL5rYqwB7oaBv1M1Y4k?e=3SIGjn">Resultado de aprendizaje 1</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgD34HHZqeGzTLC2iTFojdG0AasFwNhEivQltxiD8QP6z_E?e=pABcDV">Resultado de aprendizaje 2</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgDZzx-N_b1nS68Q-iaBFgUHAZjpSM5bRs-_ETNSRBeKaX4?e=exByo1">Resultado de aprendizaje 3</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgCSFVg7goJvSrgTxFm8UKSUAZQknpub5RpfcqMLeYk6Uak?e=99TXkK">Resultado de aprendizaje 4</a></li>
+        </ul>
+      </article>
+    </div>
+    </div>
+  </details>
+
+  <!-- ══════════ Sección 2 ══════════ -->
+  <details class="seccion revelar">
+    <summary><h3>Contabilidad y Finanzas - Contabilidad y Costos</h3><span class="flecha" aria-hidden="true"></span></summary>
+    <div class="contenido">
+    <div class="unidades">
+      <article class="unidad">
+        <h4><span class="num">Recursos</span>Materiales del área contable</h4>
+        <ul>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgCqPNjZ8TTDT62ePzh16hNvAabv6E7WVrGW2OtdpQ75ZKc?e=2KfPty">Actividades para los primeros días</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgC0Nn_G-AeXS7BUsrfLtwXWAeMW9Q61ULJDZxkH0LnFH7c?e=Du2VNx">Resultado de Aprendizaje 1</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgCrsL1008qwRoYMHGAfJMQ4AaZj_OuCAlSZ8AXiwmOCGMg?e=HsuvWD">Resultado de Aprendizaje 2</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgDeKEZO0ynvTJAaAy_2WLy-AeS0qsgbuitr1Lztu1_K0Qc?e=UZCgqR">Resultado de Aprendizaje 3</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgAhUwHZTPneR7VaPE0mRsE0AfMDroKO9CSzZMvfCtwuuzk?e=n3eCgb">Resultado de Aprendizaje 6</a></li>
+        </ul>
+      </article>
+    </div>
+    </div>
+  </details>
+
+  <!-- ══════════ Sección 3 ══════════ -->
+  <details class="seccion revelar">
+    <summary><h3>Otros materiales</h3><span class="flecha" aria-hidden="true"></span></summary>
+    <div class="contenido">
+    <div class="unidades">
+      <article class="unidad">
+        <h4><span class="num">Complementarios</span>Actividades y recursos adicionales</h4>
+        <ul>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgAaRGJ9sEiuQKQ6NYP6IUjHARvuj7VL-lZ8ea_NJbJlKpw?e=pWUpMV">Películas</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgChB0OBG_aeRLEZVjsN8-VmAXuNAbJU4PpQDxXjMVWFDbM?e=ksx6zg">Otras actividades</a></li>
+          <li><a href="https://adminmepcr-my.sharepoint.com/:f:/g/personal/luis_mora_castro_mep_go_cr/IgC4h6pUM6fdRJ6J9ruOiytGAT3ECJ0uNnZfQ3_gGgpf5fs?e=deVfLD">Otros materiales</a></li>
+        </ul>
+      </article>
+    </div>
+    </div>
+  </details>
+</main>
+
+<div class="tricolor" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+
+<footer>
+  <p><span class="dorado">PEI. Lic Roberto Mora Castro</span></p>
+  <p class="fecha" id="fechaHoy"></p>
+</footer>
+
+<script>
+  const menu = document.getElementById('menu');
+  const boton = document.getElementById('botonMenu');
+
+  boton.addEventListener('click', () => {
+    const abierto = menu.classList.toggle('abierto');
+    boton.setAttribute('aria-expanded', abierto);
+  });
+
+  document.querySelectorAll('#listaMenu a').forEach(enlace => {
+    enlace.addEventListener('click', () => {
+      menu.classList.remove('abierto');
+      boton.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (menu.classList.contains('abierto') && !menu.contains(e.target)) {
+      menu.classList.remove('abierto');
+      boton.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu.classList.contains('abierto')) {
+      menu.classList.remove('abierto');
+      boton.setAttribute('aria-expanded', 'false');
+      boton.focus();
+    }
+  });
+
+  // Fecha del día en el pie de página
+  document.getElementById('fechaHoy').textContent =
+    new Date().toLocaleDateString('es-CR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  // Revelar elementos suavemente al entrar en pantalla
+  const observador = new IntersectionObserver(entradas => {
+    entradas.forEach(e => {
+      if (e.isIntersecting){ e.target.classList.add('visible'); observador.unobserve(e.target); }
+    });
+  }, { threshold: .15 });
+  document.querySelectorAll('.revelar').forEach(el => observador.observe(el));
+</script>
+
+</body>
+</html>

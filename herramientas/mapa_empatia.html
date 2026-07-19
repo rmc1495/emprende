@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa de Empatía</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<!-- html2canvas & jsPDF para exportar -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+  /* IMPORTANTE: no usar color-mix() ni oklch() en este archivo.
+     html2canvas 1.4.1 no los soporta y rompe la exportación PNG/PDF. */
+  :root {
+    --bg: #f6f4ff;
+    --surface: #ffffff;
+    --ink: #2d2a45;
+    --soft: #6d6a8a;
+    --muted: #a09dbd;
+    --border: #e6e2f5;
+
+    --violet: #7c3aed;  --violet-d: #5b21b6;
+    --pink:   #ec4899;
+    --green:  #22c55e;  --green-d:  #15803d;
+    --blue:   #3b82f6;  --blue-d:   #1d4ed8;
+    --red:    #ef4444;  --red-d:    #b91c1c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(124,58,237,0.07) 0, transparent 30%),
+      radial-gradient(circle at 88% 20%, rgba(236,72,153,0.07) 0, transparent 30%),
+      radial-gradient(circle at 70% 90%, rgba(6,182,212,0.06) 0, transparent 32%);
+    color: var(--ink);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  button { font-family: inherit; cursor: pointer; }
+  svg { display: block; flex-shrink: 0; }
+
+  /* ============ HEADER ============ */
+  header {
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(8px);
+    border-bottom: 2px solid var(--border);
+    padding: 0.9rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+  }
+
+  .brand { display: flex; align-items: center; gap: 0.8rem; }
+
+  .brand-icon {
+    width: 46px; height: 46px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--violet), var(--pink));
+    box-shadow: 0 4px 0 var(--violet-d);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.35rem;
+  }
+
+  .brand h1 {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    line-height: 1.1;
+    background: linear-gradient(90deg, var(--violet), var(--pink));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .brand .sub {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .header-actions { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+
+  /* botones estilo "3D chunky" */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 0.6rem 1.1rem;
+    border-radius: 14px;
+    border: none;
+    color: #fff;
+    transition: transform 0.1s, box-shadow 0.1s, filter 0.15s;
+  }
+
+  .btn:hover:not(:disabled) { filter: brightness(1.06); }
+  .btn:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 0 0 transparent !important; }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .btn-reset { background: #fff; color: var(--soft); box-shadow: 0 4px 0 var(--border); border: 2px solid var(--border); }
+  .btn-reset:hover:not(:disabled) { color: var(--red); border-color: #ffc9c9; box-shadow: 0 4px 0 #ffc9c9; }
+  .btn-png { background: var(--violet); box-shadow: 0 4px 0 var(--violet-d); }
+  .btn-pdf { background: var(--green); box-shadow: 0 4px 0 var(--green-d); }
+
+  .btn .spin { animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ============ LAYOUT ============ */
+  main {
+    flex: 1;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 1.4rem;
+    display: flex;
+    gap: 1.4rem;
+    align-items: flex-start;
+  }
+
+  aside {
+    width: 300px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    position: sticky;
+    top: 92px;
+  }
+
+  #mapBoard {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    padding: 1.1rem;
+    border-radius: 24px;
+  }
+
+  #mapBoard.is-exporting { background: #f6f4ff; }
+
+  #pdfTitle {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 2rem;
+    text-align: center;
+    color: var(--ink);
+    display: none;
+  }
+
+  #mapBoard.is-exporting #pdfTitle { display: block; }
+
+  /* ============ PANEL: NUEVA IDEA ============ */
+  .panel {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 0 6px 0 var(--border);
+    padding: 1.1rem;
+  }
+
+  .panel-label {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .panel-label .badge-icon {
+    width: 26px; height: 26px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--violet), var(--pink));
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .panel textarea {
+    width: 100%;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    background: var(--bg);
+    padding: 0.7rem 0.85rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink);
+    resize: none;
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .panel textarea:focus { border-color: var(--violet); background: #fff; }
+
+  .panel-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.75rem;
+    gap: 0.6rem;
+  }
+
+  .color-picker { display: flex; gap: 0.45rem; }
+
+  .color-dot {
+    width: 27px; height: 27px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 2px var(--border);
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+
+  .color-dot:hover { transform: scale(1.18); }
+  .color-dot.active { box-shadow: 0 0 0 2.5px var(--ink); transform: scale(1.18); }
+
+  .btn-add {
+    font-size: 0.82rem;
+    font-weight: 800;
+    padding: 0.55rem 1.1rem;
+    border-radius: 12px;
+    border: none;
+    background: var(--ink);
+    color: #fff;
+    box-shadow: 0 4px 0 #17152b;
+    transition: transform 0.1s, box-shadow 0.1s, opacity 0.15s;
+  }
+
+  .btn-add:active:not(:disabled) { transform: translateY(4px); box-shadow: none; }
+  .btn-add:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
+
+  /* ============ BANDEJA Y PAPELERA ============ */
+  .tray {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 240px;
+    max-height: 44vh;
+    box-shadow: 0 6px 0 var(--border);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+  }
+
+  .zone-head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding-bottom: 0.65rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 2px dashed var(--border);
+    pointer-events: none;
+  }
+
+  .zone-chip {
+    width: 32px; height: 32px;
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    background: var(--za, var(--soft));
+    flex-shrink: 0;
+  }
+
+  .zone-head h3 {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 0.98rem;
+    line-height: 1.15;
+  }
+
+  .zone-count {
+    margin-left: auto;
+    font-size: 0.72rem;
+    font-weight: 800;
+    background: var(--zl, var(--bg));
+    color: var(--za, var(--soft));
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  .tray-content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding-right: 4px;
+    pointer-events: none;
+  }
+
+  .tray-content::-webkit-scrollbar { width: 5px; }
+  .tray-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 20px; }
+
+  .trash {
+    border: 2px dashed #d9d4ee;
+    border-radius: 18px;
+    padding: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    color: var(--soft);
+    font-weight: 800;
+    font-size: 0.88rem;
+    background: transparent;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+
+  .trash > * { pointer-events: none; }
+
+  .trash.drag-over, .trash:hover {
+    border-color: var(--red);
+    color: var(--red);
+    background: #ffecec;
+  }
+
+  /* ============ ZONAS DEL MAPA ============ */
+  .quadrants {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.1rem;
+    flex: 1;
+  }
+
+  .bottom-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.1rem;
+  }
+
+  .zone {
+    position: relative;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 1rem;
+    min-height: 230px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 6px 0 var(--zl);
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    cursor: pointer;
+  }
+
+  .zone.drag-over {
+    border-color: var(--za);
+    box-shadow: 0 6px 0 var(--za);
+    transform: translateY(-3px);
+    z-index: 5;
+  }
+
+  .tray.drag-over {
+    border-color: var(--blue);
+    box-shadow: 0 6px 0 var(--blue);
+  }
+
+  .zone-content {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: flex-start;
+    align-content: flex-start;
+    pointer-events: none;
+  }
+
+  .empty-placeholder {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.6rem 0;
+    pointer-events: none;
+  }
+
+  .empty-placeholder span {
+    border: 2px dashed #d9d4ee;
+    border-radius: 12px;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .tray-empty {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-top: 2.2rem;
+    pointer-events: none;
+  }
+
+  /* ícono central */
+  .center-badge {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, var(--violet), var(--pink));
+    box-shadow: 0 5px 0 var(--violet-d), 0 0 0 6px #fff;
+    border-radius: 50%;
+    width: 80px; height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    pointer-events: none;
+    color: #fff;
+  }
+
+  /* ============ NOTAS ============ */
+  .note {
+    position: relative;
+    padding: 0.7rem 0.8rem;
+    border-radius: 14px;
+    min-height: 78px;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid rgba(45,42,69,0.08);
+    box-shadow: 0 4px 0 rgba(45,42,69,0.12);
+    cursor: grab;
+    pointer-events: auto;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .note:active { cursor: grabbing; }
+
+  .zone-content .note { width: calc(50% - 0.4rem); }
+  .tray-content .note { width: 100%; }
+
+  @media (min-width: 1200px) {
+    .zone-content .note { width: 158px; }
+  }
+
+  .zone-content .note:nth-child(odd)  { transform: rotate(-1.4deg); }
+  .zone-content .note:nth-child(even) { transform: rotate(1.2deg); }
+
+  .note:hover {
+    transform: rotate(0deg) translateY(-3px);
+    box-shadow: 0 7px 0 rgba(45,42,69,0.16);
+    z-index: 6;
+  }
+
+  .note p {
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.45;
+    color: #3b3760;
+    white-space: pre-wrap;
+    word-break: break-word;
+    flex: 1;
+    pointer-events: none;
+  }
+
+  .note.selected {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+    transform: rotate(0deg) scale(1.04);
+    z-index: 8;
+  }
+
+  .note.dragging { opacity: 0.45; }
+
+  .note-delete-btn {
+    position: absolute;
+    top: -9px; right: -9px;
+    width: 23px; height: 23px;
+    border-radius: 50%;
+    border: 2.5px solid #fff;
+    background: var(--red);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s, transform 0.12s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 7;
+  }
+
+  .note:hover .note-delete-btn { opacity: 1; }
+  .note-delete-btn:hover { transform: scale(1.15); }
+  .note-delete-btn svg { pointer-events: none; }
+
+  /* colores de nota (mismas claves que antes para no perder datos guardados) */
+  .bg-yellow-200 { background: #ffe583; }
+  .bg-pink-200   { background: #ffc9de; }
+  .bg-blue-200   { background: #bfdcff; }
+  .bg-green-200  { background: #c1f0d1; }
+  .bg-purple-200 { background: #ddd0ff; }
+
+  /* ============ MODAL ============ */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(45, 42, 69, 0.5);
+    backdrop-filter: blur(3px);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .modal-backdrop.open { display: flex; }
+  .modal-backdrop.visible { opacity: 1; }
+
+  .modal-card {
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 22px;
+    box-shadow: 0 8px 0 var(--border);
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 380px;
+    transform: scale(0.94);
+    transition: transform 0.25s;
+  }
+
+  .modal-backdrop.visible .modal-card { transform: scale(1); }
+
+  .modal-card h3 {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+  }
+
+  .modal-card p {
+    font-size: 0.87rem;
+    font-weight: 600;
+    color: var(--soft);
+    line-height: 1.6;
+    margin-bottom: 1.3rem;
+  }
+
+  .modal-actions { display: flex; justify-content: flex-end; gap: 0.6rem; }
+
+  .btn-ghost {
+    font-size: 0.83rem; font-weight: 800;
+    padding: 0.55rem 1rem;
+    border-radius: 12px;
+    border: none;
+    background: transparent;
+    color: var(--soft);
+    transition: background 0.15s;
+  }
+
+  .btn-ghost:hover { background: var(--bg); }
+
+  .btn-confirm {
+    font-size: 0.83rem; font-weight: 800;
+    padding: 0.55rem 1rem;
+    border-radius: 12px;
+    border: none;
+    background: var(--red);
+    color: #fff;
+    box-shadow: 0 4px 0 var(--red-d);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+
+  .btn-confirm:active { transform: translateY(4px); box-shadow: none; }
+
+  /* ============ TOASTS ============ */
+  #toastContainer {
+    position: fixed;
+    top: 88px; right: 1.4rem;
+    z-index: 90;
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+
+  .toast {
+    background: var(--ink);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.7rem 1.1rem;
+    border-radius: 14px;
+    box-shadow: 0 5px 0 rgba(45,42,69,0.25);
+    transform: translateX(30px);
+    opacity: 0;
+    transition: all 0.3s;
+  }
+
+  .toast.error { background: var(--red); box-shadow: 0 5px 0 var(--red-d); }
+  .toast.show { transform: translateX(0); opacity: 1; }
+
+  /* ============ TOAST ACCESIBILIDAD ============ */
+  #a11yToast {
+    position: fixed;
+    bottom: 1.4rem; right: 1.4rem;
+    background: var(--blue);
+    color: #fff;
+    padding: 0.75rem 1.1rem;
+    border-radius: 999px;
+    box-shadow: 0 5px 0 var(--blue-d);
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.83rem;
+    font-weight: 800;
+    z-index: 90;
+    transform: translateY(90px);
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  #a11yToast.show { transform: translateY(0); opacity: 1; }
+
+  #a11yToast button {
+    background: rgba(255,255,255,0.25);
+    border: none;
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    pointer-events: auto;
+    transition: background 0.15s;
+  }
+
+  #a11yToast button:hover { background: rgba(255,255,255,0.4); }
+
+  /* ============ EXPORT MODE ============ */
+  .is-exporting .note-delete-btn,
+  .is-exporting .empty-placeholder,
+  .is-exporting .tray-empty { display: none !important; }
+
+  .is-exporting .note { transform: none !important; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 960px) {
+    main { flex-direction: column; }
+    aside { width: 100%; position: static; }
+    .tray { max-height: 320px; }
+  }
+
+  @media (max-width: 640px) {
+    .quadrants, .bottom-row { grid-template-columns: 1fr; }
+    .center-badge { display: none; }
+    header { padding: 0.8rem 1rem; }
+    main { padding: 1rem; }
+    #mapBoard { padding: 0.4rem; }
+    .header-actions { width: 100%; }
+    .btn { flex: 1; justify-content: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<style>
+/* ══════════ Botón de regreso COTE EMPRENDE ══════════ */
+.cote-nav{background:#14235C;position:sticky;top:0;z-index:9999;box-shadow:0 2px 10px rgba(20,35,92,.25);font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif;text-align:center}
+.cote-nav a{display:inline-block;color:#fff;text-decoration:none;padding:.8rem 1.6rem;font-weight:600;letter-spacing:.05em;font-size:.9rem;text-transform:uppercase;border-bottom:3px solid transparent;transition:background .2s,border-color .2s}
+.cote-nav a:hover,.cote-nav a:focus-visible{background:#1E3A8A;border-bottom-color:#C9A227;outline:none}
+.cote-nav a::before{content:"‹ ";color:#C9A227;font-weight:700}
+</style>
+</head>
+<body>
+<nav class="cote-nav" aria-label="Regresar al sitio">
+  <a href="../herramientas.html">Herramientas</a>
+</nav>
+
+
+  <!-- Modal de confirmación -->
+  <div id="confirmModal" class="modal-backdrop">
+    <div class="modal-card">
+      <h3>¿Reiniciar tablero?</h3>
+      <p>Se borrarán todas las ideas y volverá el mapa de ejemplo. Esta acción no se puede deshacer.</p>
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closeConfirmModal()">Cancelar</button>
+        <button class="btn-confirm" onclick="confirmReset()">Sí, reiniciar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastContainer"></div>
+
+  <!-- Toast de accesibilidad -->
+  <div id="a11yToast">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>
+    <span>Idea seleccionada. Toque un área para moverla.</span>
+    <button onclick="clearSelection(event)" title="Cancelar selección">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <!-- Cabecera -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🧠</div>
+      <div>
+        <h1>Mapa de Empatía</h1>
+        <p class="sub">Innovación · PEI</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-reset" onclick="openConfirmModal()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        <span class="btn-txt">Reiniciar</span>
+      </button>
+      <button class="btn btn-png" id="pngBtn" onclick="exportToPNG()">
+        <span class="btn-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+        </span>
+        <span class="btn-txt">Exportar PNG</span>
+      </button>
+      <button class="btn btn-pdf" id="pdfBtn" onclick="exportToPDF()">
+        <span class="btn-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </span>
+        <span class="btn-txt">Exportar PDF</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Barra lateral -->
+    <aside>
+      <!-- Nueva idea -->
+      <form id="noteForm" class="panel">
+        <label class="panel-label" for="newNoteText">
+          <span class="badge-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </span>
+          Nueva idea
+        </label>
+        <textarea id="newNoteText" rows="3" placeholder="Escriba lo que el usuario siente, piensa, dice…"></textarea>
+        <div class="panel-row">
+          <div class="color-picker" id="colorPicker"></div>
+          <button type="submit" class="btn-add" id="addBtn" disabled>Agregar</button>
+        </div>
+      </form>
+
+      <!-- Bandeja -->
+      <div id="zone-bandeja" data-zone="bandeja" class="drop-zone tray" style="--za:#3b82f6; --zl:#eaf2ff">
+        <div class="zone-head">
+          <span class="zone-chip">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+          </span>
+          <h3>Bandeja</h3>
+          <span class="zone-count" id="count-bandeja">0</span>
+        </div>
+        <div class="tray-content" id="content-bandeja"></div>
+      </div>
+
+      <!-- Papelera -->
+      <div id="zone-trash" data-zone="trash" class="drop-zone trash">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <span>Papelera</span>
+      </div>
+    </aside>
+
+    <!-- Tablero -->
+    <section id="mapBoard">
+      <h2 id="pdfTitle">Mapa de Empatía</h2>
+
+      <div class="quadrants">
+        <!-- Piensa -->
+        <div id="zone-piensa" data-zone="piensa" class="drop-zone zone" style="--za:#3b82f6; --zl:#eaf2ff">
+          <div class="zone-head">
+            <span class="zone-chip">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>
+            </span>
+            <h3>¿Qué piensa y siente?</h3>
+            <span class="zone-count" id="count-piensa">0</span>
+          </div>
+          <div class="zone-content" id="content-piensa"></div>
+        </div>
+
+        <!-- Ve -->
+        <div id="zone-ve" data-zone="ve" class="drop-zone zone" style="--za:#06b6d4; --zl:#e4f9fd">
+          <div class="zone-head">
+            <span class="zone-chip">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </span>
+            <h3>¿Qué ve?</h3>
+            <span class="zone-count" id="count-ve">0</span>
+          </div>
+          <div class="zone-content" id="content-ve"></div>
+        </div>
+
+        <!-- Escucha -->
+        <div id="zone-escucha" data-zone="escucha" class="drop-zone zone" style="--za:#fb923c; --zl:#fff1e6">
+          <div class="zone-head">
+            <span class="zone-chip">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6-6 6-6 10a3.5 3.5 0 1 1-7 0"/><path d="M15 8.5a2.5 2.5 0 0 0-5 0v1a2 2 0 1 1 0 4"/></svg>
+            </span>
+            <h3>¿Qué escucha?</h3>
+            <span class="zone-count" id="count-escucha">0</span>
+          </div>
+          <div class="zone-content" id="content-escucha"></div>
+        </div>
+
+        <!-- Dice -->
+        <div id="zone-dice" data-zone="dice" class="drop-zone zone" style="--za:#7c3aed; --zl:#f1eaff">
+          <div class="zone-head">
+            <span class="zone-chip">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+            </span>
+            <h3>¿Qué dice y hace?</h3>
+            <span class="zone-count" id="count-dice">0</span>
+          </div>
+          <div class="zone-content" id="content-dice"></div>
+        </div>
+
+        <!-- Ícono central -->
+        <div class="center-badge">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+      </div>
+
+      <div class="bottom-row">
+        <!-- Esfuerzos -->
+        <div id="zone-esfuerzos" data-zone="esfuerzos" class="drop-zone zone" style="--za:#ef4444; --zl:#ffecec">
+          <div class="zone-head">
+            <span class="zone-chip">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </span>
+            <h3>Esfuerzos (Dolores)</h3>
+            <span class="zone-count" id="count-esfuerzos">0</span>
+          </div>
+          <div class="zone-content" id="content-esfuerzos"></div>
+        </div>
+
+        <!-- Resultados -->
+        <div id="zone-resultados" data-zone="resultados" class="drop-zone zone" style="--za:#22c55e; --zl:#e9fbef">
+          <div class="zone-head">
+            <span class="zone-chip">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+            </span>
+            <h3>Resultados (Beneficios)</h3>
+            <span class="zone-count" id="count-resultados">0</span>
+          </div>
+          <div class="zone-content" id="content-resultados"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+  // ---------------- DATOS Y ESTADO ----------------
+  const defaultItems = [
+    { id: '1', text: 'Siente que no tiene suficiente tiempo libre para sí mismo.', category: 'piensa', color: 'bg-yellow-200' },
+    { id: '2', text: '"Deberías probar esta nueva aplicación, es genial."', category: 'escucha', color: 'bg-blue-200' },
+    { id: '3', text: 'Mucha publicidad engañosa en redes sociales.', category: 've', color: 'bg-pink-200' },
+    { id: '4', text: 'Comparte artículos sobre productividad en LinkedIn.', category: 'dice', color: 'bg-green-200' },
+    { id: '5', text: 'Frustración por procesos lentos y burocráticos.', category: 'esfuerzos', color: 'bg-purple-200' },
+    { id: '6', text: 'Desea ahorrar al menos 2 horas a la semana.', category: 'resultados', color: 'bg-yellow-200' }
+  ];
+
+  const colors = [
+    { name: 'Amarillo', class: 'bg-yellow-200', hex: '#ffe583' },
+    { name: 'Rosa',     class: 'bg-pink-200',   hex: '#ffc9de' },
+    { name: 'Azul',     class: 'bg-blue-200',   hex: '#bfdcff' },
+    { name: 'Verde',    class: 'bg-green-200',  hex: '#c1f0d1' },
+    { name: 'Morado',   class: 'bg-purple-200', hex: '#ddd0ff' }
+  ];
+
+  let items = [];
+  let selectedColor = 'bg-yellow-200';
+  let draggedItemId = null;
+  let selectedItemId = null;
+
+  function loadData() {
+    const saved = localStorage.getItem('empathyMapDataHtml');
+    if (saved) {
+      try { items = JSON.parse(saved); }
+      catch (e) { console.error('Error parseando localStorage', e); items = [...defaultItems]; }
+    } else {
+      items = [...defaultItems];
+    }
+  }
+
+  function saveData() {
+    localStorage.setItem('empathyMapDataHtml', JSON.stringify(items));
+  }
+
+  // ---------------- UTILIDADES ----------------
+  function escapeHTML(str) {
+    return String(str).replace(/[&<>'"]/g,
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag])
+    );
+  }
+
+  function showToastMessage(msg, isError = false) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast' + (isError ? ' error' : '');
+    toast.innerText = msg;
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // ---------------- RENDERIZADO ----------------
+  function renderColors() {
+    const container = document.getElementById('colorPicker');
+    container.innerHTML = '';
+    colors.forEach(c => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.title = c.name;
+      btn.className = 'color-dot' + (selectedColor === c.class ? ' active' : '');
+      btn.style.background = c.hex;
+      btn.setAttribute('aria-label', 'Color ' + c.name);
+      btn.onclick = () => { selectedColor = c.class; renderColors(); };
+      container.appendChild(btn);
+    });
+  }
+
+  const categories = ['bandeja', 'piensa', 've', 'escucha', 'dice', 'esfuerzos', 'resultados'];
+
+  function renderNotes() {
+    const containers = {};
+    categories.forEach(cat => {
+      containers[cat] = document.getElementById(`content-${cat}`);
+      if (containers[cat]) containers[cat].innerHTML = '';
+      document.getElementById(`count-${cat}`).innerText = '0';
+    });
+
+    const grouped = {};
+    categories.forEach(c => grouped[c] = []);
+    items.forEach(item => { if (grouped[item.category]) grouped[item.category].push(item); });
+
+    categories.forEach(cat => {
+      const zoneItems = grouped[cat];
+      document.getElementById(`count-${cat}`).innerText = zoneItems.length;
+
+      if (zoneItems.length === 0 && cat !== 'bandeja') {
+        containers[cat].innerHTML = `
+          <div class="empty-placeholder"><span>Arrastre ideas aquí</span></div>`;
+      } else if (zoneItems.length === 0 && cat === 'bandeja') {
+        containers[cat].innerHTML = `<div class="tray-empty">Las nuevas ideas aparecerán aquí.</div>`;
+      } else {
+        zoneItems.forEach(item => {
+          const isSelected = selectedItemId === item.id;
+          const noteHTML = `
+            <div id="note-${item.id}" draggable="true"
+                 class="note ${item.color}${isSelected ? ' selected' : ''}"
+                 role="button" tabindex="0" aria-label="Idea: ${escapeHTML(item.text)}">
+              <p>${escapeHTML(item.text)}</p>
+              <button class="note-delete-btn" title="Eliminar" aria-label="Eliminar idea">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>`;
+
+          const template = document.createElement('template');
+          template.innerHTML = noteHTML.trim();
+          const noteElement = template.content.firstChild;
+
+          noteElement.addEventListener('dragstart', (e) => handleDragStart(e, item.id));
+          noteElement.addEventListener('click', (e) => {
+            e.stopPropagation();
+            handleNoteClick(item.id);
+          });
+          noteElement.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleNoteClick(item.id);
+            }
+          });
+
+          noteElement.querySelector('.note-delete-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteNote(item.id);
+          });
+
+          containers[cat].appendChild(noteElement);
+        });
+      }
+    });
+
+    updateA11yToast();
+  }
+
+  // ---------------- MODAL ----------------
+  const modal = document.getElementById('confirmModal');
+
+  function openConfirmModal() {
+    modal.classList.add('open');
+    requestAnimationFrame(() => modal.classList.add('visible'));
+  }
+
+  function closeConfirmModal() {
+    modal.classList.remove('visible');
+    setTimeout(() => modal.classList.remove('open'), 250);
+  }
+
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeConfirmModal(); });
+
+  function confirmReset() {
+    items = [...defaultItems];
+    saveData();
+    renderNotes();
+    closeConfirmModal();
+    showToastMessage('Tablero reiniciado');
+  }
+
+  // ---------------- LÓGICA CORE ----------------
+  function addNote(e) {
+    e.preventDefault();
+    const input = document.getElementById('newNoteText');
+    const text = input.value.trim();
+    if (!text) return;
+
+    items.unshift({
+      id: Date.now().toString(),
+      text: text,
+      category: 'bandeja',
+      color: selectedColor
+    });
+    saveData();
+    renderNotes();
+    input.value = '';
+    checkInput();
+    showToastMessage('Idea añadida a la bandeja');
+  }
+
+  function deleteNote(id) {
+    items = items.filter(item => item.id !== id);
+    if (selectedItemId === id) selectedItemId = null;
+    saveData();
+    renderNotes();
+  }
+
+  const newNoteInput = document.getElementById('newNoteText');
+  const addBtn = document.getElementById('addBtn');
+
+  function checkInput() {
+    addBtn.disabled = newNoteInput.value.trim().length === 0;
+  }
+
+  newNoteInput.addEventListener('input', checkInput);
+  newNoteInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!addBtn.disabled) addNote(e);
+    }
+  });
+  document.getElementById('noteForm').addEventListener('submit', addNote);
+
+  // ---------------- DRAG & DROP Y SELECCIÓN ----------------
+  function handleDragStart(e, id) {
+    draggedItemId = id;
+    selectedItemId = null;
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => {
+      const el = document.getElementById(`note-${id}`);
+      if (el) el.classList.add('dragging');
+    }, 0);
+  }
+
+  function handleDragEnd() {
+    if (draggedItemId) {
+      const el = document.getElementById(`note-${draggedItemId}`);
+      if (el) el.classList.remove('dragging');
+    }
+    document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+  }
+
+  document.querySelectorAll('.drop-zone').forEach(zone => {
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      zone.classList.add('drag-over');
+    });
+
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const zoneId = zone.dataset.zone;
+      const id = draggedItemId;
+      handleDragEnd();
+      draggedItemId = null;
+
+      if (id) {
+        if (zoneId === 'trash') {
+          deleteNote(id);
+          showToastMessage('Idea eliminada');
+        } else {
+          const idx = items.findIndex(i => i.id === id);
+          if (idx > -1) {
+            items[idx].category = zoneId;
+            saveData();
+            renderNotes();
+          }
+        }
+      }
+    });
+
+    // Clic en la zona (modo accesibilidad / táctil)
+    zone.addEventListener('click', () => {
+      if (selectedItemId) {
+        const zoneId = zone.dataset.zone;
+        if (zoneId === 'trash') {
+          deleteNote(selectedItemId);
+          showToastMessage('Idea eliminada');
+        } else {
+          const idx = items.findIndex(i => i.id === selectedItemId);
+          if (idx > -1) {
+            items[idx].category = zoneId;
+            selectedItemId = null;
+            saveData();
+            renderNotes();
+          }
+        }
+      }
+    });
+  });
+
+  document.addEventListener('dragend', handleDragEnd);
+
+  // ---------------- MODO ACCESIBILIDAD ----------------
+  function handleNoteClick(id) {
+    selectedItemId = selectedItemId === id ? null : id;
+    renderNotes();
+  }
+
+  function clearSelection(e) {
+    if (e) e.stopPropagation();
+    selectedItemId = null;
+    renderNotes();
+  }
+
+  function updateA11yToast() {
+    document.getElementById('a11yToast').classList.toggle('show', !!selectedItemId);
+  }
+
+  document.addEventListener('click', (e) => {
+    if (selectedItemId && !e.target.closest('.note') && !e.target.closest('.drop-zone') && !e.target.closest('#a11yToast')) {
+      clearSelection();
+    }
+  });
+
+  // ---------------- EXPORTAR (PDF / PNG) ----------------
+  function setButtonLoading(btn, loading, defaultText) {
+    const txt = btn.querySelector('.btn-txt');
+    const icon = btn.querySelector('.btn-icon');
+    btn.disabled = loading;
+    txt.innerText = loading ? 'Generando…' : defaultText;
+    if (icon) {
+      if (!icon.dataset.original) icon.dataset.original = icon.innerHTML;
+      icon.innerHTML = loading
+        ? '<svg class="spin" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>'
+        : icon.dataset.original;
+    }
+  }
+
+  async function captureBoard() {
+    const mapBoard = document.getElementById('mapBoard');
+    mapBoard.classList.add('is-exporting');
+    try {
+      const canvas = await html2canvas(mapBoard, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#f6f4ff'
+      });
+      return canvas;
+    } finally {
+      mapBoard.classList.remove('is-exporting');
+    }
+  }
+
+  async function exportToPDF() {
+    if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+      showToastMessage('Las librerías aún no cargan. Intente en un segundo.', true);
+      return;
+    }
+    const btn = document.getElementById('pdfBtn');
+    setButtonLoading(btn, true, 'Exportar PDF');
+
+    try {
+      const canvas = await captureBoard();
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save('mi-mapa-de-empatia.pdf');
+      showToastMessage('PDF descargado correctamente');
+    } catch (error) {
+      console.error('Error generando el PDF:', error);
+      showToastMessage('Hubo un error al generar el PDF.', true);
+    } finally {
+      setButtonLoading(btn, false, 'Exportar PDF');
+    }
+  }
+
+  async function exportToPNG() {
+    if (typeof html2canvas === 'undefined') {
+      showToastMessage('Las librerías aún no cargan. Intente en un segundo.', true);
+      return;
+    }
+    const btn = document.getElementById('pngBtn');
+    setButtonLoading(btn, true, 'Exportar PNG');
+
+    try {
+      const canvas = await captureBoard();
+      const link = document.createElement('a');
+      link.download = 'mi-mapa-de-empatia.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToastMessage('PNG descargado correctamente');
+    } catch (error) {
+      console.error('Error generando el PNG:', error);
+      showToastMessage('Hubo un error al generar el PNG.', true);
+    } finally {
+      setButtonLoading(btn, false, 'Exportar PNG');
+    }
+  }
+
+  // ---------------- ARRANQUE ----------------
+  loadData();
+  renderColors();
+  renderNotes();
+</script>
+
+
+</body>
+</html>

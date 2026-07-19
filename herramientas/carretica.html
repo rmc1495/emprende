@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La CarreTica – Estructura de Costos y Punto de Equilibrio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FFF8F0;
+    --warm-white: #FFFCF7;
+    --orange: #F4721E;
+    --orange-light: #F9A663;
+    --orange-pale: #FDE8D4;
+    --green: #2E9E6B;
+    --green-light: #7FCCA6;
+    --green-pale: #D8F2E8;
+    --red: #E84040;
+    --red-pale: #FDEAEA;
+    --blue: #2878C8;
+    --blue-pale: #D8EAFA;
+    --brown: #7A4F2E;
+    --text-dark: #2A1A0E;
+    --text-mid: #5C3D22;
+    --text-light: #9C7A5A;
+    --border: #E8D5C0;
+    --shadow: 0 4px 24px rgba(120,70,30,0.10);
+    --shadow-lg: 0 8px 40px rgba(120,70,30,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, #F4721E 0%, #E85A0A 60%, #C44800 100%);
+    color: white;
+    padding: 40px 32px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: 10%;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .header-content { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+  .header-tag {
+    font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+    background: rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 14px;
+    display: inline-block; margin-bottom: 12px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 900; line-height: 1.1; margin-bottom: 8px;
+  }
+  header h1 span { color: #FFD9B0; }
+  header p { font-size: 15px; opacity: 0.88; font-weight: 300; max-width: 520px; }
+  .school-badge {
+    margin-top: 16px; font-size: 11px; opacity: 0.7;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* NAV TABS */
+  .tabs-wrapper {
+    background: white;
+    border-bottom: 2px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(120,70,30,0.08);
+  }
+  .tabs { display: flex; max-width: 900px; margin: 0 auto; overflow-x: auto; }
+  .tab-btn {
+    padding: 16px 24px; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.5px;
+    border: none; background: none; cursor: pointer;
+    color: var(--text-light); border-bottom: 3px solid transparent;
+    white-space: nowrap; transition: all 0.25s; text-transform: uppercase;
+  }
+  .tab-btn:hover { color: var(--orange); }
+  .tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); }
+
+  /* MAIN */
+  main { max-width: 900px; margin: 0 auto; padding: 32px 16px 60px; }
+
+  /* SECTIONS */
+  .section { display: none; animation: fadeUp 0.4s ease; }
+  .section.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px; font-weight: 700; color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+  .section-subtitle { font-size: 14px; color: var(--text-light); margin-bottom: 28px; }
+
+  /* CARDS */
+  .card {
+    background: white; border-radius: 16px; padding: 24px;
+    box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid var(--border);
+  }
+  .card-title {
+    font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--orange); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .card-title::before { content: ''; display: block; width: 20px; height: 3px; background: var(--orange); border-radius: 2px; }
+
+  /* INGREDIENT GRID */
+  .ingredient-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+  .ingredient-item {
+    background: var(--orange-pale); border-radius: 12px; padding: 14px 12px;
+    border: 1px solid #F0C89A; text-align: center;
+  }
+  .ingredient-icon { font-size: 26px; margin-bottom: 6px; }
+  .ingredient-name { font-size: 12px; font-weight: 600; color: var(--brown); margin-bottom: 4px; }
+  .ingredient-detail { font-size: 11px; color: var(--text-light); }
+  .ingredient-price { font-size: 14px; font-weight: 700; color: var(--orange); margin-top: 4px; }
+
+  /* PORTION TABLE */
+  .result-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+    background: var(--warm-white); border: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  .result-row:hover { background: var(--orange-pale); }
+  .result-label { font-size: 13px; font-weight: 500; color: var(--text-mid); }
+  .result-value { font-size: 15px; font-weight: 700; color: var(--orange); }
+  .result-formula { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+  /* COST BREAKDOWN */
+  .cost-breakdown {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;
+  }
+  @media(max-width: 500px){ .cost-breakdown { grid-template-columns: 1fr; } }
+  .cost-item {
+    background: var(--warm-white); border-radius: 12px; padding: 16px;
+    border: 1px solid var(--border); display: flex; align-items: center; gap: 12px;
+  }
+  .cost-dot {
+    width: 40px; height: 40px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+  }
+  .cost-label { font-size: 12px; color: var(--text-light); margin-bottom: 2px; }
+  .cost-amount { font-size: 18px; font-weight: 700; }
+
+  /* TOTAL BOX */
+  .total-box {
+    background: linear-gradient(135deg, var(--orange) 0%, #E85A0A 100%);
+    color: white; border-radius: 16px; padding: 24px 28px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px;
+  }
+  .total-box .label { font-size: 13px; opacity: 0.85; margin-bottom: 4px; }
+  .total-box .value { font-size: 32px; font-weight: 700; font-family: 'Playfair Display', serif; }
+  .total-box .sub { font-size: 12px; opacity: 0.75; margin-top: 4px; }
+
+  /* PRICE BOX */
+  .price-box {
+    background: linear-gradient(135deg, var(--green) 0%, #1F7A52 100%);
+    color: white; border-radius: 16px; padding: 24px 28px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  /* === PUNTO DE EQUILIBRIO INTERACTIVO === */
+  .equilibrio-header {
+    background: linear-gradient(135deg, #EBF8F2 0%, #D2F0E4 100%);
+    border-radius: 16px; padding: 24px; margin-bottom: 24px;
+    border: 1px solid #B0E4CC;
+  }
+  .equilibrio-header h3 {
+    font-family: 'Playfair Display', serif; font-size: 22px;
+    color: var(--green); margin-bottom: 6px;
+  }
+  .equilibrio-header p { font-size: 13px; color: #3A7A5C; }
+
+  .scenario-pills {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px;
+  }
+  .scenario-pill {
+    padding: 8px 18px; border-radius: 30px; font-size: 12px; font-weight: 600;
+    cursor: pointer; border: 2px solid var(--border); background: white;
+    color: var(--text-mid); transition: all 0.2s;
+  }
+  .scenario-pill.active { background: var(--orange); color: white; border-color: var(--orange); }
+  .scenario-pill:hover:not(.active) { border-color: var(--orange-light); color: var(--orange); }
+
+  /* SLIDERS */
+  .sliders-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  @media(max-width: 600px){ .sliders-grid { grid-template-columns: 1fr; } }
+
+  .slider-card {
+    background: white; border-radius: 14px; padding: 18px;
+    border: 1px solid var(--border); box-shadow: var(--shadow);
+    transition: border-color 0.2s;
+  }
+  .slider-card:focus-within { border-color: var(--orange-light); }
+  .slider-card label {
+    font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text-light);
+    display: block; margin-bottom: 8px;
+  }
+  .slider-value-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .slider-number {
+    font-size: 22px; font-weight: 700; color: var(--text-dark);
+    font-family: 'Playfair Display', serif;
+  }
+  .slider-unit { font-size: 12px; color: var(--text-light); }
+  input[type=range] {
+    width: 100%; height: 6px; border-radius: 4px;
+    background: linear-gradient(to right, var(--orange) 0%, var(--orange) var(--pct, 50%), #E8D5C0 var(--pct, 50%), #E8D5C0 100%);
+    outline: none; -webkit-appearance: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 20px; height: 20px;
+    border-radius: 50%; background: var(--orange);
+    border: 3px solid white; box-shadow: 0 2px 8px rgba(244,114,30,0.4);
+    cursor: pointer;
+  }
+  input[type=range].green-slider {
+    background: linear-gradient(to right, var(--green) 0%, var(--green) var(--pct, 50%), #E8D5C0 var(--pct, 50%), #E8D5C0 100%);
+  }
+  input[type=range].green-slider::-webkit-slider-thumb { background: var(--green); box-shadow: 0 2px 8px rgba(46,158,107,0.4); }
+
+  /* EQUILIBRIO RESULTS */
+  .equilibrio-results {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    margin-bottom: 24px;
+  }
+  @media(max-width: 600px){ .equilibrio-results { grid-template-columns: 1fr 1fr; } }
+  @media(max-width: 400px){ .equilibrio-results { grid-template-columns: 1fr; } }
+
+  .eq-metric {
+    border-radius: 14px; padding: 16px 14px; text-align: center;
+    border: 1px solid; transition: all 0.3s;
+  }
+  .eq-metric .eq-icon { font-size: 22px; margin-bottom: 6px; }
+  .eq-metric .eq-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .eq-metric .eq-value { font-size: 22px; font-weight: 700; font-family: 'Playfair Display', serif; }
+  .eq-metric .eq-sub { font-size: 10px; margin-top: 3px; opacity: 0.7; }
+  .eq-metric.orange { background: #FFF3EA; border-color: #F9C89A; color: var(--orange); }
+  .eq-metric.green  { background: var(--green-pale); border-color: #9ADBC1; color: var(--green); }
+  .eq-metric.blue   { background: var(--blue-pale); border-color: #9DC8EC; color: var(--blue); }
+  .eq-metric.red    { background: var(--red-pale); border-color: #F4ACAC; color: var(--red); }
+  .eq-metric.brown  { background: var(--orange-pale); border-color: #D4B08C; color: var(--brown); }
+
+  /* CHART */
+  .chart-wrapper {
+    background: white; border-radius: 16px; padding: 24px;
+    border: 1px solid var(--border); box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+  .chart-title {
+    font-size: 13px; font-weight: 600; color: var(--text-mid);
+    margin-bottom: 16px; text-align: center;
+  }
+  .chart-svg-container { width: 100%; overflow: hidden; }
+  svg.chart { width: 100%; font-family: 'DM Sans', sans-serif; }
+
+  /* STATUS BANNER */
+  .status-banner {
+    border-radius: 14px; padding: 16px 20px;
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 20px; border: 2px solid; transition: all 0.3s;
+  }
+  .status-banner.profit   { background: var(--green-pale); border-color: var(--green-light); }
+  .status-banner.loss     { background: var(--red-pale); border-color: #F4ACAC; }
+  .status-banner.neutral  { background: var(--blue-pale); border-color: #9DC8EC; }
+  .status-icon { font-size: 30px; }
+  .status-text strong { font-size: 15px; }
+  .status-text p { font-size: 13px; margin-top: 2px; opacity: 0.8; }
+
+  /* FIXED COSTS */
+  .fixed-costs-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media(max-width: 500px){ .fixed-costs-list { grid-template-columns: 1fr; } }
+  .fc-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px; background: var(--warm-white); border-radius: 8px;
+    border: 1px solid var(--border); font-size: 13px;
+  }
+  .fc-label { color: var(--text-mid); }
+  .fc-amount { font-weight: 600; color: var(--text-dark); }
+
+  /* CASADO SECTION */
+  .casado-comparison {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;
+  }
+  @media(max-width: 500px){ .casado-comparison { grid-template-columns: 1fr; } }
+  .compare-card {
+    border-radius: 16px; padding: 20px; border: 2px solid;
+  }
+  .compare-card.basic { background: var(--orange-pale); border-color: var(--orange-light); }
+  .compare-card.full  { background: var(--green-pale); border-color: var(--green-light); }
+  .compare-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .compare-card.basic h4 { color: var(--orange); }
+  .compare-card.full  h4 { color: var(--green); }
+  .compare-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+  .compare-total { border-top: 2px solid; margin-top: 10px; padding-top: 10px; font-weight: 700; font-size: 15px; }
+  .compare-card.basic .compare-total { border-color: var(--orange-light); color: var(--orange); }
+  .compare-card.full  .compare-total { border-color: var(--green-light); color: var(--green); }
+
+  /* FOOTER */
+  .page-footer {
+    text-align: center; padding: 24px; font-size: 11px;
+    color: var(--text-light); border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+
+  /* TOOLTIP */
+  .tooltip-trigger { cursor: help; border-bottom: 1px dashed var(--text-light); }
+
+  /* PULSE ANIMATION */
+  @keyframes pulse-green {
+    0%,100% { box-shadow: 0 0 0 0 rgba(46,158,107,0.4); }
+    50%      { box-shadow: 0 0 0 8px rgba(46,158,107,0); }
+  }
+  .animate-pulse { animation: pulse-green 2s infinite; }
+</style>
+
+<style>
+/* ══════════ Botón de regreso COTE EMPRENDE ══════════ */
+.cote-nav{background:#14235C;position:sticky;top:0;z-index:9999;box-shadow:0 2px 10px rgba(20,35,92,.25);font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif;text-align:center}
+.cote-nav a{display:inline-block;color:#fff;text-decoration:none;padding:.8rem 1.6rem;font-weight:600;letter-spacing:.05em;font-size:.9rem;text-transform:uppercase;border-bottom:3px solid transparent;transition:background .2s,border-color .2s}
+.cote-nav a:hover,.cote-nav a:focus-visible{background:#1E3A8A;border-bottom-color:#C9A227;outline:none}
+.cote-nav a::before{content:"‹ ";color:#C9A227;font-weight:700}
+</style>
+</head>
+<body>
+<nav class="cote-nav" aria-label="Regresar al sitio">
+  <a href="../herramientas.html">Herramientas</a>
+</nav>
+
+
+<header>
+  <div class="header-content">
+    <div class="header-tag">🍽️ Emprendimiento e Innovación</div>
+    <h1>La <span>CarreTica</span></h1>
+    <p>Estructura de costos, fijación de precios y análisis interactivo del punto de equilibrio</p>
+    <div class="school-badge">
+      🏫 CTP Educación Comercial y de Servicios &nbsp;·&nbsp; PEI. Roberto Mora Castro
+    </div>
+  </div>
+</header>
+
+<div class="tabs-wrapper">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('insumos')">📦 Insumos y Porciones</button>
+    <button class="tab-btn" onclick="showTab('costos')">💰 Costos por Plato</button>
+    <button class="tab-btn" onclick="showTab('equilibrio')">📊 Punto de Equilibrio</button>
+    <button class="tab-btn" onclick="showTab('casado')">🍛 El Casado Completo</button>
+  </div>
+</div>
+
+<main>
+
+<!-- ============== TAB 1: INSUMOS ============== -->
+<div id="tab-insumos" class="section active">
+  <h2 class="section-title">Insumos y Porciones</h2>
+  <p class="section-subtitle">Materias primas usadas para preparar el plato básico de arroz, frijoles y ensalada.</p>
+
+  <div class="card">
+    <div class="card-title">Ingredientes disponibles</div>
+    <div class="ingredient-grid">
+      <div class="ingredient-item">
+        <div class="ingredient-icon">🌾</div>
+        <div class="ingredient-name">Arroz</div>
+        <div class="ingredient-detail">2 kg</div>
+        <div class="ingredient-price">₡1,500</div>
+      </div>
+      <div class="ingredient-item">
+        <div class="ingredient-icon">🫘</div>
+        <div class="ingredient-name">Frijoles</div>
+        <div class="ingredient-detail">1 kg</div>
+        <div class="ingredient-price">₡2,000</div>
+      </div>
+      <div class="ingredient-item">
+        <div class="ingredient-icon">🥫</div>
+        <div class="ingredient-name">Aderezo</div>
+        <div class="ingredient-detail">500 ml</div>
+        <div class="ingredient-price">₡2,500</div>
+      </div>
+      <div class="ingredient-item">
+        <div class="ingredient-icon">🍅</div>
+        <div class="ingredient-name">Tomate</div>
+        <div class="ingredient-detail">1 kg</div>
+        <div class="ingredient-price">₡1,000</div>
+      </div>
+      <div class="ingredient-item">
+        <div class="ingredient-icon">🥬</div>
+        <div class="ingredient-name">Repollo</div>
+        <div class="ingredient-detail">1 kg</div>
+        <div class="ingredient-price">₡800</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Porciones por ingrediente</div>
+
+    <div class="result-row">
+      <div>
+        <div class="result-label">🌾 Porciones de Arroz (a)</div>
+        <div class="result-formula">2,000 g ÷ 100 g por porción</div>
+      </div>
+      <div class="result-value">20 porciones</div>
+    </div>
+    <div class="result-row">
+      <div>
+        <div class="result-label">🫘 Porciones de Frijoles (b)</div>
+        <div class="result-formula">1,000 g ÷ 50 g por porción</div>
+      </div>
+      <div class="result-value">20 porciones</div>
+    </div>
+
+    <div style="margin: 16px 0 8px; font-size: 12px; font-weight: 600; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px;">Ensalada (c) — ingrediente limitante</div>
+
+    <div class="result-row">
+      <div>
+        <div class="result-label">🍅 Tomate</div>
+        <div class="result-formula">1,000 g ÷ 25 g = 40 porciones</div>
+      </div>
+      <div class="result-value" style="color:#888;">40 porciones</div>
+    </div>
+    <div class="result-row" style="border: 2px solid #F9A663;">
+      <div>
+        <div class="result-label">🥬 Repollo <span style="color:var(--orange);font-size:11px;font-weight:700;">⚠ Limitante</span></div>
+        <div class="result-formula">1,000 g ÷ 50 g = 20 porciones</div>
+      </div>
+      <div class="result-value">20 porciones</div>
+    </div>
+    <div class="result-row">
+      <div>
+        <div class="result-label">🥫 Aderezo</div>
+        <div class="result-formula">500 ml ÷ 5 ml = 100 porciones</div>
+      </div>
+      <div class="result-value" style="color:#888;">100 porciones</div>
+    </div>
+
+    <div class="result-row" style="background: var(--green-pale); border-color: var(--green-light);">
+      <div>
+        <div class="result-label" style="font-weight:700; color: var(--green);">✅ Total porciones de ensalada</div>
+        <div class="result-formula">Determinado por el ingrediente más escaso</div>
+      </div>
+      <div class="result-value" style="color: var(--green);">20 porciones</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== TAB 2: COSTOS ============== -->
+<div id="tab-costos" class="section">
+  <h2 class="section-title">Costos por Plato</h2>
+  <p class="section-subtitle">Cálculo del costo variable unitario y fijación del precio de venta.</p>
+
+  <div class="card">
+    <div class="card-title">Costo por porción de cada componente</div>
+    <div class="cost-breakdown">
+      <div class="cost-item">
+        <div class="cost-dot" style="background: #FDE8D4;">🌾</div>
+        <div>
+          <div class="cost-label">Arroz (d)</div>
+          <div class="cost-amount" style="color: var(--orange);">₡75</div>
+          <div style="font-size:11px;color:var(--text-light);">1,500 ÷ 20</div>
+        </div>
+      </div>
+      <div class="cost-item">
+        <div class="cost-dot" style="background: #EDE8FF;">🫘</div>
+        <div>
+          <div class="cost-label">Frijoles (e)</div>
+          <div class="cost-amount" style="color: #7B5EA7;">₡100</div>
+          <div style="font-size:11px;color:var(--text-light);">2,000 ÷ 20</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size: 12px; color: var(--text-light); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Costo ensalada por porción (f)</div>
+    <div class="result-row">
+      <div><div class="result-label">🍅 Tomate: 1,000 ÷ 40</div></div>
+      <div class="result-value" style="color:#E07030;">₡25</div>
+    </div>
+    <div class="result-row">
+      <div><div class="result-label">🥬 Repollo: 800 ÷ 20</div></div>
+      <div class="result-value" style="color:#E07030;">₡40</div>
+    </div>
+    <div class="result-row">
+      <div><div class="result-label">🥫 Aderezo: 2,500 ÷ 100</div></div>
+      <div class="result-value" style="color:#E07030;">₡25</div>
+    </div>
+    <div class="result-row" style="background: var(--orange-pale); border-color: #F0C89A;">
+      <div><div class="result-label" style="font-weight:700;">Total Ensalada</div></div>
+      <div class="result-value">₡90</div>
+    </div>
+  </div>
+
+  <div class="total-box">
+    <div>
+      <div class="label">Costo Total de Producción por Plato (g)</div>
+      <div class="value">₡315</div>
+      <div class="sub">₡75 arroz + ₡100 frijoles + ₡90 ensalada + ₡50 indirectos</div>
+    </div>
+    <div style="font-size:40px;">🍽️</div>
+  </div>
+
+  <div class="price-box">
+    <div>
+      <div class="label">Precio de Venta con 50% ganancia (h)</div>
+      <div class="value">₡473</div>
+      <div class="sub">₡315 × 1.5 = ₡472.5 → redondeado ₡473</div>
+    </div>
+    <div style="font-size:40px;">✅</div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <div class="card-title">Producción de 100 platos por día (i)</div>
+    <div class="result-row" style="background: var(--blue-pale); border-color: #9DC8EC;">
+      <div>
+        <div class="result-label" style="color: var(--blue); font-weight:700;">Costo total diario (100 platos)</div>
+        <div class="result-formula">₡315 × 100 platos</div>
+      </div>
+      <div class="result-value" style="color: var(--blue);">₡31,500</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== TAB 3: PUNTO DE EQUILIBRIO ============== -->
+<div id="tab-equilibrio" class="section">
+  <h2 class="section-title">Punto de Equilibrio Interactivo</h2>
+  <p class="section-subtitle">Ajusta los sliders para ver cómo cambian los resultados en tiempo real.</p>
+
+  <div class="equilibrio-header">
+    <h3>📊 ¿Qué es el Punto de Equilibrio?</h3>
+    <p>Es el nivel de ventas donde los ingresos totales igualan exactamente a los costos totales. Por encima: ganancia. Por debajo: pérdida. Juega con los valores para ver cómo afectan la viabilidad del negocio.</p>
+  </div>
+
+  <div class="scenario-pills" style="margin-bottom:16px;">
+    <span style="font-size:12px;font-weight:600;color:var(--text-light);padding:8px 0;">Escenarios rápidos:</span>
+    <button class="scenario-pill active" onclick="loadScenario('base')">📌 Base original</button>
+    <button class="scenario-pill" onclick="loadScenario('optimista')">🚀 Optimista</button>
+    <button class="scenario-pill" onclick="loadScenario('crisis')">⚠️ Costos altos</button>
+    <button class="scenario-pill" onclick="loadScenario('premium')">💎 Precio premium</button>
+  </div>
+
+  <div class="sliders-grid">
+    <div class="slider-card">
+      <label>💰 Precio de Venta (₡)</label>
+      <div class="slider-value-row">
+        <span class="slider-number" id="val-precio">473</span>
+        <span class="slider-unit">colones</span>
+      </div>
+      <input type="range" id="sl-precio" min="200" max="1500" value="473" oninput="updateEquilibrio()">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-light);margin-top:4px;"><span>₡200</span><span>₡1,500</span></div>
+    </div>
+    <div class="slider-card">
+      <label>🏭 Costo Variable por Plato (₡)</label>
+      <div class="slider-value-row">
+        <span class="slider-number" id="val-costo">315</span>
+        <span class="slider-unit">colones</span>
+      </div>
+      <input type="range" id="sl-costo" min="100" max="1000" value="315" oninput="updateEquilibrio()">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-light);margin-top:4px;"><span>₡100</span><span>₡1,000</span></div>
+    </div>
+    <div class="slider-card">
+      <label>🏢 Gastos Fijos Mensuales (₡)</label>
+      <div class="slider-value-row">
+        <span class="slider-number" id="val-fijos">1145000</span>
+        <span class="slider-unit">colones/mes</span>
+      </div>
+      <input type="range" id="sl-fijos" min="200000" max="3000000" step="10000" value="1145000" oninput="updateEquilibrio()">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-light);margin-top:4px;"><span>₡200k</span><span>₡3M</span></div>
+    </div>
+    <div class="slider-card">
+      <label class="green-slider">📅 Ventas Actuales por Día</label>
+      <div class="slider-value-row">
+        <span class="slider-number" id="val-ventas" style="color:var(--green)">100</span>
+        <span class="slider-unit">platos/día</span>
+      </div>
+      <input type="range" class="green-slider" id="sl-ventas" min="1" max="500" value="100" oninput="updateEquilibrio()">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-light);margin-top:4px;"><span>1</span><span>500</span></div>
+    </div>
+  </div>
+
+  <!-- STATUS BANNER -->
+  <div class="status-banner" id="status-banner">
+    <div class="status-icon" id="status-icon">⚠️</div>
+    <div class="status-text">
+      <strong id="status-title">Calculando...</strong>
+      <p id="status-desc"></p>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="equilibrio-results">
+    <div class="eq-metric orange">
+      <div class="eq-icon">💹</div>
+      <div class="eq-label">Margen Contribución</div>
+      <div class="eq-value" id="met-margen">₡158</div>
+      <div class="eq-sub">por plato vendido</div>
+    </div>
+    <div class="eq-metric blue">
+      <div class="eq-icon">📦</div>
+      <div class="eq-label">PE en Unidades</div>
+      <div class="eq-value" id="met-unidades">7,247</div>
+      <div class="eq-sub">platos al mes</div>
+    </div>
+    <div class="eq-metric green">
+      <div class="eq-icon">📅</div>
+      <div class="eq-label">PE por Día</div>
+      <div class="eq-value" id="met-diario">242</div>
+      <div class="eq-sub">platos/día (30 días)</div>
+    </div>
+    <div class="eq-metric brown">
+      <div class="eq-icon">💵</div>
+      <div class="eq-label">PE en Colones</div>
+      <div class="eq-value" id="met-colones">₡3.43M</div>
+      <div class="eq-sub">ingresos necesarios</div>
+    </div>
+    <div class="eq-metric" id="met-resultado-card" style="background:#FFF;border-color:var(--border);">
+      <div class="eq-icon" id="met-resultado-icon">📊</div>
+      <div class="eq-label">Resultado Mensual</div>
+      <div class="eq-value" id="met-resultado">₡0</div>
+      <div class="eq-sub" id="met-resultado-sub">ganancia/pérdida</div>
+    </div>
+    <div class="eq-metric" style="background:#FFF5EA;border-color:#F9C89A;color:var(--brown);">
+      <div class="eq-icon">🎯</div>
+      <div class="eq-label">% del PE alcanzado</div>
+      <div class="eq-value" id="met-pct">41%</div>
+      <div class="eq-sub">con ventas actuales</div>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="chart-wrapper">
+    <div class="chart-title">Ingresos vs Costos Totales — Zona de ganancia y pérdida</div>
+    <div class="chart-svg-container">
+      <svg id="eq-chart" class="chart" viewBox="0 0 800 320"></svg>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Gastos Fijos Mensuales</div>
+    <div class="fixed-costs-list">
+      <div class="fc-item"><span class="fc-label">🏠 Alquiler local</span><span class="fc-amount">₡300,000</span></div>
+      <div class="fc-item"><span class="fc-label">👥 Salarios (3)</span><span class="fc-amount">₡600,000</span></div>
+      <div class="fc-item"><span class="fc-label">⚡ Electricidad</span><span class="fc-amount">₡80,000</span></div>
+      <div class="fc-item"><span class="fc-label">💧 Agua</span><span class="fc-amount">₡30,000</span></div>
+      <div class="fc-item"><span class="fc-label">📡 Internet/Teléfono</span><span class="fc-amount">₡25,000</span></div>
+      <div class="fc-item"><span class="fc-label">🔒 Seguro</span><span class="fc-amount">₡40,000</span></div>
+      <div class="fc-item"><span class="fc-label">🏛️ Permisos</span><span class="fc-amount">₡20,000</span></div>
+      <div class="fc-item"><span class="fc-label">📣 Marketing</span><span class="fc-amount">₡50,000</span></div>
+    </div>
+    <div class="result-row" style="margin-top:12px; background:var(--orange-pale); border-color:var(--orange-light);">
+      <div class="result-label" style="font-weight:700;">Total Gastos Fijos</div>
+      <div class="result-value">₡1,145,000</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============== TAB 4: CASADO ============== -->
+<div id="tab-casado" class="section">
+  <h2 class="section-title">El Casado Completo</h2>
+  <p class="section-subtitle">Comparativa entre el plato básico y el casado completo con proteína, guarnición y refresco.</p>
+
+  <div class="card">
+    <div class="card-title">Nuevos elementos añadidos</div>
+    <div class="ingredient-grid">
+      <div class="ingredient-item" style="background:var(--green-pale); border-color:#9ADBC1;">
+        <div class="ingredient-icon">🍗</div>
+        <div class="ingredient-name" style="color:var(--green);">Proteína</div>
+        <div class="ingredient-detail">Pollo / carne</div>
+        <div class="ingredient-price" style="color:var(--green);">₡1,200</div>
+      </div>
+      <div class="ingredient-item" style="background:var(--green-pale); border-color:#9ADBC1;">
+        <div class="ingredient-icon">🍌</div>
+        <div class="ingredient-name" style="color:var(--green);">Guarnición</div>
+        <div class="ingredient-detail">Plátanos / verduras</div>
+        <div class="ingredient-price" style="color:var(--green);">₡400</div>
+      </div>
+      <div class="ingredient-item" style="background:var(--green-pale); border-color:#9ADBC1;">
+        <div class="ingredient-icon">🥤</div>
+        <div class="ingredient-name" style="color:var(--green);">Refresco natural</div>
+        <div class="ingredient-detail">Bebida incluida</div>
+        <div class="ingredient-price" style="color:var(--green);">₡300</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="casado-comparison">
+    <div class="compare-card basic">
+      <h4>🍽️ Plato Básico</h4>
+      <div class="compare-row"><span>Arroz</span><span>₡75</span></div>
+      <div class="compare-row"><span>Frijoles</span><span>₡100</span></div>
+      <div class="compare-row"><span>Ensalada</span><span>₡90</span></div>
+      <div class="compare-row"><span>Costos indirectos</span><span>₡50</span></div>
+      <div class="compare-row compare-total"><span>Costo variable</span><span>₡315</span></div>
+      <div style="margin-top:10px;">
+        <div class="compare-row" style="font-size:12px;"><span>Precio de venta</span><span style="font-weight:600;">₡473</span></div>
+        <div class="compare-row" style="font-size:12px;"><span>Margen contribución</span><span style="font-weight:600;">₡158</span></div>
+        <div class="compare-row" style="font-size:12px;"><span>PE mensual</span><span style="font-weight:600;">7,247 platos</span></div>
+        <div class="compare-row" style="font-size:12px;"><span>PE diario</span><span style="font-weight:600;">242 platos/día</span></div>
+      </div>
+    </div>
+    <div class="compare-card full">
+      <h4>🍛 Casado Completo</h4>
+      <div class="compare-row"><span>Plato básico</span><span>₡315</span></div>
+      <div class="compare-row"><span>Proteína</span><span>₡1,200</span></div>
+      <div class="compare-row"><span>Guarnición</span><span>₡400</span></div>
+      <div class="compare-row"><span>Refresco natural</span><span>₡300</span></div>
+      <div class="compare-row compare-total"><span>Costo variable</span><span>₡2,215</span></div>
+      <div style="margin-top:10px;">
+        <div class="compare-row" style="font-size:12px;"><span>Precio de venta</span><span style="font-weight:600;">₡3,750</span></div>
+        <div class="compare-row" style="font-size:12px;"><span>Margen contribución</span><span style="font-weight:600;">₡1,535</span></div>
+        <div class="compare-row" style="font-size:12px;"><span>PE mensual</span><span style="font-weight:600;">746 platos</span></div>
+        <div class="compare-row" style="font-size:12px;"><span>PE diario</span><span style="font-weight:600;">25 platos/día</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-wrapper">
+    <div class="chart-title">Comparativa visual: Plato Básico vs Casado Completo</div>
+    <svg id="casado-chart" class="chart" viewBox="0 0 800 280"></svg>
+  </div>
+
+  <div class="card" style="background: linear-gradient(135deg,#EBF8F2,#D2F0E4); border-color:#9ADBC1;">
+    <div class="card-title" style="color:var(--green);">Conclusión del análisis</div>
+    <p style="font-size:14px; color:#2A5A3E; line-height:1.7;">
+      Al ofrecer el <strong>casado completo</strong>, la soda "La CarreTica" reduce dramáticamente su punto de equilibrio de <strong>242 platos/día a solo 25 platos/día</strong>. Aunque el costo variable es mayor, el precio de venta aumenta más, logrando un margen de contribución de ₡1,535 por plato — casi 10 veces mayor que el plato básico. Sin embargo, debe evaluarse si el precio de ₡3,750 es competitivo en el mercado local y si los clientes están dispuestos a pagarlo.
+    </p>
+  </div>
+</div>
+
+</main>
+
+<div class="page-footer">
+  Colegio Técnico Profesional de Educación Comercial y de Servicios &nbsp;·&nbsp; Dirección Regional San José Oeste &nbsp;·&nbsp; PEI. Roberto Mora Castro
+</div>
+
+<script>
+  // ===== TAB NAVIGATION =====
+  function showTab(name) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+    if (name === 'equilibrio') { updateEquilibrio(); }
+    if (name === 'casado') { drawCasadoChart(); }
+  }
+
+  // ===== SLIDER FILL =====
+  function updateSliderFill(el) {
+    const min = +el.min, max = +el.max, val = +el.value;
+    const pct = ((val - min) / (max - min)) * 100;
+    el.style.setProperty('--pct', pct + '%');
+  }
+  document.querySelectorAll('input[type=range]').forEach(el => {
+    el.addEventListener('input', () => updateSliderFill(el));
+    updateSliderFill(el);
+  });
+
+  // ===== SCENARIOS =====
+  const scenarios = {
+    base:      { precio: 473,  costo: 315, fijos: 1145000, ventas: 100 },
+    optimista: { precio: 600,  costo: 280, fijos: 1000000, ventas: 300 },
+    crisis:    { precio: 473,  costo: 400, fijos: 1500000, ventas: 80  },
+    premium:   { precio: 900,  costo: 350, fijos: 1145000, ventas: 150 },
+  };
+
+  function loadScenario(name) {
+    document.querySelectorAll('.scenario-pill').forEach(p => p.classList.remove('active'));
+    event.target.classList.add('active');
+    const s = scenarios[name];
+    document.getElementById('sl-precio').value = s.precio;
+    document.getElementById('sl-costo').value = s.costo;
+    document.getElementById('sl-fijos').value = s.fijos;
+    document.getElementById('sl-ventas').value = s.ventas;
+    document.querySelectorAll('input[type=range]').forEach(el => updateSliderFill(el));
+    updateEquilibrio();
+  }
+
+  // ===== FORMAT HELPERS =====
+  function fmtN(n) { return n.toLocaleString('es-CR'); }
+  function fmtC(n) {
+    if (Math.abs(n) >= 1000000) return '₡' + (n/1000000).toFixed(2) + 'M';
+    if (Math.abs(n) >= 1000)    return '₡' + (n/1000).toFixed(1) + 'k';
+    return '₡' + fmtN(Math.round(n));
+  }
+
+  // ===== MAIN CALC =====
+  function updateEquilibrio() {
+    const precio  = +document.getElementById('sl-precio').value;
+    const costo   = +document.getElementById('sl-costo').value;
+    const fijos   = +document.getElementById('sl-fijos').value;
+    const ventas  = +document.getElementById('sl-ventas').value; // platos/día
+
+    document.getElementById('val-precio').textContent = fmtN(precio);
+    document.getElementById('val-costo').textContent  = fmtN(costo);
+    document.getElementById('val-fijos').textContent  = fmtN(fijos);
+    document.getElementById('val-ventas').textContent = fmtN(ventas);
+
+    const margen = precio - costo;
+    const peUnidades = margen > 0 ? fijos / margen : Infinity;
+    const peDiario   = peUnidades / 30;
+    const peColones  = peUnidades * precio;
+
+    const ventasMes    = ventas * 30;
+    const ingresosMes  = ventasMes * precio;
+    const costosMes    = fijos + ventasMes * costo;
+    const resultadoMes = ingresosMes - costosMes;
+    const pctPE        = peUnidades > 0 ? Math.min((ventasMes / peUnidades) * 100, 999) : 0;
+
+    // Metrics
+    document.getElementById('met-margen').textContent    = margen > 0 ? '₡' + fmtN(Math.round(margen)) : 'N/A';
+    document.getElementById('met-unidades').textContent  = margen > 0 ? fmtN(Math.ceil(peUnidades)) : '∞';
+    document.getElementById('met-diario').textContent    = margen > 0 ? fmtN(Math.ceil(peDiario)) : '∞';
+    document.getElementById('met-colones').textContent   = margen > 0 ? fmtC(peColones) : '∞';
+    document.getElementById('met-resultado').textContent = fmtC(Math.abs(resultadoMes));
+    document.getElementById('met-pct').textContent       = margen > 0 ? Math.round(pctPE) + '%' : '0%';
+
+    const resCard = document.getElementById('met-resultado-card');
+    const resIcon = document.getElementById('met-resultado-icon');
+    const resSub  = document.getElementById('met-resultado-sub');
+    if (resultadoMes > 0) {
+      resCard.style.background = '#EBF8F2'; resCard.style.borderColor = '#9ADBC1'; resCard.style.color = 'var(--green)';
+      resIcon.textContent = '💚'; resSub.textContent = 'ganancia mensual';
+    } else if (resultadoMes < 0) {
+      resCard.style.background = '#FDEAEA'; resCard.style.borderColor = '#F4ACAC'; resCard.style.color = 'var(--red)';
+      resIcon.textContent = '🔴'; resSub.textContent = 'pérdida mensual';
+    } else {
+      resCard.style.background = '#EEF4FF'; resCard.style.borderColor = '#9DC8EC'; resCard.style.color = 'var(--blue)';
+      resIcon.textContent = '⚖️'; resSub.textContent = 'punto exacto';
+    }
+
+    // Status banner
+    const banner = document.getElementById('status-banner');
+    const sIcon  = document.getElementById('status-icon');
+    const sTitle = document.getElementById('status-title');
+    const sDesc  = document.getElementById('status-desc');
+
+    if (margen <= 0) {
+      banner.className = 'status-banner loss';
+      sIcon.textContent = '🚫';
+      sTitle.textContent = 'Precio de venta igual o menor al costo — ¡imposible operar!';
+      sDesc.textContent  = `El precio (₡${fmtN(precio)}) no cubre el costo variable (₡${fmtN(costo)}). Debes aumentar el precio.`;
+    } else if (resultadoMes >= 0) {
+      banner.className = 'status-banner profit';
+      sIcon.textContent = '🎉';
+      sTitle.textContent = `¡Superaste el punto de equilibrio! Ganancia mensual de ${fmtC(resultadoMes)}`;
+      sDesc.textContent  = `Con ${fmtN(ventas)} platos/día (${fmtN(ventasMes)}/mes), estás al ${Math.round(pctPE)}% del PE. Cada plato adicional genera ₡${fmtN(Math.round(margen))} de ganancia neta.`;
+    } else {
+      banner.className = 'status-banner loss';
+      const faltanPlatos = Math.ceil(peUnidades - ventasMes);
+      sIcon.textContent = '⚠️';
+      sTitle.textContent = `Debajo del punto de equilibrio. Pérdida de ${fmtC(Math.abs(resultadoMes))}/mes`;
+      sDesc.textContent  = `Con ${fmtN(ventas)} platos/día alcanzas el ${Math.round(pctPE)}% del PE. Necesitas vender ${fmtN(faltanPlatos)} platos más al mes (${Math.ceil(peDiario)} platos/día).`;
+    }
+
+    drawChart(precio, costo, fijos, ventas);
+  }
+
+  // ===== DRAW CHART =====
+  function drawChart(precio, costo, fijos, ventasDia) {
+    const svg = document.getElementById('eq-chart');
+    const W = 800, H = 320;
+    const pad = { top: 30, right: 30, bottom: 50, left: 80 };
+    const cW = W - pad.left - pad.right;
+    const cH = H - pad.top - pad.bottom;
+
+    const margen = precio - costo;
+    const peU = margen > 0 ? fijos / margen : 9999;
+    const maxX = Math.max(peU * 2, ventasDia * 30 * 1.5, 500);
+    const maxY = Math.max(fijos * 2.5, precio * maxX * 0.5);
+
+    function xP(v) { return pad.left + (v / maxX) * cW; }
+    function yP(v) { return pad.top + cH - (v / maxY) * cH; }
+
+    let html = '';
+
+    // Grid lines
+    for (let i = 0; i <= 4; i++) {
+      const yv = (maxY / 4) * i;
+      const yc = yP(yv);
+      html += `<line x1="${pad.left}" y1="${yc}" x2="${W - pad.right}" y2="${yc}" stroke="#E8D5C0" stroke-width="1" stroke-dasharray="4,4"/>`;
+      html += `<text x="${pad.left - 6}" y="${yc + 4}" text-anchor="end" font-size="10" fill="#9C7A5A">${fmtC(yv)}</text>`;
+    }
+
+    // Zona ganancia (verde pálido)
+    if (margen > 0 && peU < maxX) {
+      const peX = xP(peU);
+      const costoMaxX = fijos + maxX * costo;
+      const ingresoMaxX = maxX * precio;
+      const topY = yP(Math.min(ingresoMaxX, maxY));
+      html += `<polygon points="${peX},${yP(peU * precio)} ${xP(maxX)},${topY} ${xP(maxX)},${yP(Math.min(costoMaxX, maxY))} ${peX},${yP(peU * precio)}" fill="rgba(46,158,107,0.10)" stroke="none"/>`;
+    }
+    // Zona pérdida (rojo pálido)
+    if (margen > 0) {
+      const peX = xP(Math.min(peU, maxX));
+      html += `<polygon points="${pad.left},${yP(fijos)} ${peX},${yP(Math.min(peU * precio, maxY))} ${peX},${yP(Math.min(peU * precio, maxY))} ${pad.left},${yP(fijos)}" fill="rgba(232,64,64,0.07)" stroke="none"/>`;
+      html += `<polygon points="${pad.left},${yP(fijos)} ${pad.left},${yP(0)} ${peX},${yP(0)} ${peX},${yP(Math.min(peU * precio, maxY))}" fill="rgba(232,64,64,0.07)" stroke="none"/>`;
+    }
+
+    // Línea costos fijos
+    html += `<line x1="${xP(0)}" y1="${yP(fijos)}" x2="${xP(maxX)}" y2="${yP(fijos)}" stroke="#CCAADD" stroke-width="1.5" stroke-dasharray="6,4"/>`;
+    html += `<text x="${xP(maxX) - 4}" y="${yP(fijos) - 5}" text-anchor="end" font-size="9" fill="#9970BB">Costos Fijos</text>`;
+
+    // Línea costos totales
+    const ct0 = fijos; const ctMax = fijos + maxX * costo;
+    html += `<line x1="${xP(0)}" y1="${yP(Math.min(ct0, maxY))}" x2="${xP(maxX)}" y2="${yP(Math.min(ctMax, maxY))}" stroke="#E07030" stroke-width="2.5"/>`;
+    html += `<text x="${xP(maxX * 0.6)}" y="${yP(fijos + maxX * 0.6 * costo) - 7}" font-size="10" fill="#E07030" font-weight="600">Costos Totales</text>`;
+
+    // Línea ingresos
+    if (margen > 0 || precio > 0) {
+      html += `<line x1="${xP(0)}" y1="${yP(0)}" x2="${xP(maxX)}" y2="${yP(Math.min(maxX * precio, maxY))}" stroke="#2E9E6B" stroke-width="2.5"/>`;
+      html += `<text x="${xP(maxX * 0.4)}" y="${yP(maxX * 0.4 * precio) - 7}" font-size="10" fill="#2E9E6B" font-weight="600">Ingresos Totales</text>`;
+    }
+
+    // Punto de equilibrio
+    if (margen > 0 && peU < maxX) {
+      const peX = xP(peU); const peY = yP(peU * precio);
+      html += `<line x1="${peX}" y1="${pad.top}" x2="${peX}" y2="${H - pad.bottom}" stroke="#2878C8" stroke-width="1.5" stroke-dasharray="5,4"/>`;
+      html += `<circle cx="${peX}" cy="${peY}" r="8" fill="#2878C8" opacity="0.2"/>`;
+      html += `<circle cx="${peX}" cy="${peY}" r="5" fill="#2878C8"/>`;
+      html += `<text x="${peX + 8}" y="${peY - 10}" font-size="10" fill="#2878C8" font-weight="700">PE: ${fmtN(Math.ceil(peU))} platos</text>`;
+    }
+
+    // Ventas actuales
+    const ventasMes = ventasDia * 30;
+    if (ventasMes <= maxX) {
+      const vX = xP(ventasMes); const vIngreso = ventasMes * precio; const vCosto = fijos + ventasMes * costo;
+      const vY = yP(Math.min(vIngreso, maxY));
+      html += `<line x1="${vX}" y1="${pad.top}" x2="${vX}" y2="${H - pad.bottom}" stroke="#F4721E" stroke-width="1.5" stroke-dasharray="3,3"/>`;
+      html += `<circle cx="${vX}" cy="${vY}" r="6" fill="#F4721E"/>`;
+      html += `<text x="${vX + 8}" y="${H - pad.bottom - 4}" font-size="10" fill="#F4721E" font-weight="700">Actual: ${fmtN(ventasMes)}/mes</text>`;
+    }
+
+    // Axes
+    html += `<line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${H - pad.bottom}" stroke="#C8A880" stroke-width="2"/>`;
+    html += `<line x1="${pad.left}" y1="${H - pad.bottom}" x2="${W - pad.right}" y2="${H - pad.bottom}" stroke="#C8A880" stroke-width="2"/>`;
+    html += `<text x="${W/2}" y="${H - 8}" text-anchor="middle" font-size="11" fill="#9C7A5A">Platos vendidos al mes</text>`;
+    html += `<text x="${14}" y="${H/2}" text-anchor="middle" font-size="11" fill="#9C7A5A" transform="rotate(-90,14,${H/2})">Colones (₡)</text>`;
+
+    // X labels
+    for (let i = 0; i <= 4; i++) {
+      const xv = (maxX / 4) * i;
+      html += `<text x="${xP(xv)}" y="${H - pad.bottom + 16}" text-anchor="middle" font-size="10" fill="#9C7A5A">${fmtN(Math.round(xv))}</text>`;
+    }
+
+    svg.innerHTML = html;
+  }
+
+  // ===== CASADO CHART =====
+  function drawCasadoChart() {
+    const svg = document.getElementById('casado-chart');
+    const W = 800, H = 280;
+    const metrics = [
+      { label: 'Costo Variable',      basico: 315,     casado: 2215 },
+      { label: 'Precio de Venta',     basico: 473,     casado: 3750 },
+      { label: 'Margen Contrib.',     basico: 158,     casado: 1535 },
+      { label: 'PE diario (platos)',  basico: 242,     casado: 25   },
+    ];
+
+    const maxVal = 3750;
+    const barH = 24, gap = 14, groupGap = 28;
+    const labW = 140, barAreaW = W - labW - 40;
+    let html = '';
+
+    metrics.forEach((m, i) => {
+      const y = 30 + i * (barH * 2 + gap + groupGap);
+      const b1W = (m.basico / maxVal) * barAreaW;
+      const b2W = (m.casado / maxVal) * barAreaW;
+
+      html += `<text x="0" y="${y + barH - 4}" font-size="11" fill="#5C3D22" font-weight="600">${m.label}</text>`;
+
+      html += `<rect x="${labW}" y="${y}" width="${b1W}" height="${barH}" rx="6" fill="#F4721E" opacity="0.85"/>`;
+      html += `<text x="${labW + b1W + 6}" y="${y + barH - 5}" font-size="11" fill="#E07030" font-weight="700">₡${fmtN(m.basico)}</text>`;
+      html += `<text x="${labW - 4}" y="${y + barH - 5}" text-anchor="end" font-size="9" fill="#F4721E">Básico</text>`;
+
+      html += `<rect x="${labW}" y="${y + barH + 6}" width="${b2W}" height="${barH}" rx="6" fill="#2E9E6B" opacity="0.85"/>`;
+      html += `<text x="${labW + b2W + 6}" y="${y + barH * 2 + 1}" font-size="11" fill="#1F7A52" font-weight="700">₡${fmtN(m.casado)}</text>`;
+      html += `<text x="${labW - 4}" y="${y + barH * 2 + 1}" text-anchor="end" font-size="9" fill="#2E9E6B">Casado</text>`;
+    });
+
+    // Legend
+    html += `<rect x="${W - 160}" y="8" width="14" height="14" rx="3" fill="#F4721E" opacity="0.85"/>`;
+    html += `<text x="${W - 142}" y="20" font-size="11" fill="#5C3D22">Plato Básico</text>`;
+    html += `<rect x="${W - 80}" y="8" width="14" height="14" rx="3" fill="#2E9E6B" opacity="0.85"/>`;
+    html += `<text x="${W - 62}" y="20" font-size="11" fill="#5C3D22">Casado</text>`;
+
+    svg.innerHTML = html;
+  }
+
+  // Init
+  updateEquilibrio();
+</script>
+
+</body>
+</html>

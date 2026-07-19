@@ -1,0 +1,12 @@
+CÓMO AGREGAR FOTOS AL CARRUSEL
+==============================
+1. Suba sus imágenes a esta carpeta (galeria/).
+2. Nómbrelas en orden: foto1.jpg, foto2.jpg, foto3.jpg...
+   (también sirven .jpeg, .png o .webp)
+3. ¡Listo! El carrusel las carga solo, no hay que tocar código.
+
+IMPORTANTE: la numeración no puede saltarse números.
+Si existe foto1 y foto3 pero no foto2, el carrusel se
+detiene en foto1. Máximo: 60 fotos.
+
+Consejo: fotos horizontales (más anchas que altas) se ven mejor.

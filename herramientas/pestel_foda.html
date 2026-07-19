@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suite de Análisis Estratégico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+/* IMPORTANTE: no usar color-mix() ni oklch() en este archivo.
+   html2canvas 1.4.1 no los soporta y rompe la exportación PNG/PDF. */
+:root {
+  --bg: #eef1f6;
+  --ink: #16203a;
+  --soft: #56607a;
+  --muted: #8b94ac;
+  --border: #d8deea;
+  --white: #ffffff;
+  --green: #059669;  --purple: #7c3aed;  --indigo: #4f46e5;  --red: #dc2626;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  background-image: radial-gradient(circle, #c9d1e0 1px, transparent 1px);
+  background-size: 26px 26px;
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+button { font-family: inherit; cursor: pointer; }
+svg { display: block; flex-shrink: 0; }
+h1, h2, h3, h4, .grotesk { font-family: 'Space Grotesk', sans-serif; }
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* ═══════ COMPONENTES BASE ═══════ */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 2px solid var(--ink);
+  background: #fff;
+  color: var(--ink);
+  font-size: .8rem; font-weight: 700;
+  box-shadow: 3px 3px 0 var(--bs, var(--border));
+  transition: transform .1s, box-shadow .1s, background .15s;
+  white-space: nowrap;
+}
+.btn:hover:not(:disabled) { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--bs, var(--border)); }
+.btn:active:not(:disabled) { transform: translate(3px,3px); box-shadow: 0 0 0 transparent; }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+.btn-fill { color: #fff; background: var(--bf); }
+.btn-danger:hover:not(:disabled) { background: #fdeaea; color: var(--red); }
+.spin { animation: spin .9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.card-shell {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 5px 5px 0 var(--cs, var(--border));
+}
+
+/* ═══════ HOME ═══════ */
+.home-page { max-width: 1080px; margin: 0 auto; padding: 0 28px 90px; }
+
+.hero { padding: 60px 0 44px; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .16em;
+  color: var(--ink); background: #fff;
+  border: 2px solid var(--ink); border-radius: 100px;
+  padding: 6px 15px;
+  box-shadow: 3px 3px 0 var(--indigo);
+}
+.hero h1 {
+  font-weight: 700;
+  font-size: clamp(2.4rem, 5.6vw, 4.2rem);
+  letter-spacing: -.035em; line-height: 1.02;
+  text-transform: uppercase;
+  max-width: 760px;
+}
+.hero h1 .stripe {
+  background: linear-gradient(120deg, var(--green), var(--purple), var(--indigo));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.hero-desc { font-size: 1rem; color: var(--soft); max-width: 560px; line-height: 1.65; font-weight: 500; }
+
+.section-label {
+  font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .18em;
+  color: var(--muted); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::after { content: ''; flex: 1; height: 2px; background: var(--border); }
+
+.tool-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 64px; }
+@media (max-width: 860px) { .tool-cards { grid-template-columns: 1fr; } }
+
+.tool-card {
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  padding: 26px;
+  display: flex; flex-direction: column; gap: 16px;
+  box-shadow: 6px 6px 0 var(--tc);
+  transition: transform .18s, box-shadow .18s;
+  cursor: pointer;
+}
+.tool-card:hover { transform: translate(-3px,-3px); box-shadow: 9px 9px 0 var(--tc); }
+.tool-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.tool-badge {
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700; font-size: 1rem; letter-spacing: .04em;
+  background: var(--tc); color: #fff;
+  flex-shrink: 0;
+}
+.tool-arrow {
+  width: 36px; height: 36px; border-radius: 10px;
+  border: 2px solid var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink); background: #fff;
+  transition: all .18s; flex-shrink: 0;
+}
+.tool-card:hover .tool-arrow { background: var(--ink); color: #fff; transform: rotate(-45deg); }
+.tool-name { font-weight: 700; font-size: 1.6rem; letter-spacing: -.02em; line-height: 1; text-transform: uppercase; color: var(--tc); }
+.tool-fullname { font-size: .74rem; color: var(--muted); font-weight: 600; margin-top: 5px; line-height: 1.5; }
+.tool-desc { font-size: .82rem; color: var(--soft); line-height: 1.65; font-weight: 500; flex: 1; }
+.tool-tags { display: flex; gap: 7px; flex-wrap: wrap; }
+.tag {
+  font-size: .64rem; font-weight: 700; padding: 4px 10px;
+  border-radius: 100px; background: var(--tl); color: var(--td);
+  text-transform: uppercase; letter-spacing: .05em;
+}
+
+.explain-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 980px) { .explain-grid { grid-template-columns: 1fr; } }
+.explain-card { background: #fff; border: 2px solid var(--ink); border-radius: 16px; overflow: hidden; box-shadow: 5px 5px 0 var(--border); }
+.explain-head {
+  display: flex; align-items: center; gap: 14px;
+  padding: 18px 20px;
+  border-bottom: 2px solid var(--ink);
+  background: var(--eh);
+}
+.explain-icon {
+  padding: 7px 11px; border-radius: 9px;
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: .8rem;
+  background: var(--ei); color: #fff; flex-shrink: 0;
+}
+.explain-title { font-weight: 700; font-size: 1.02rem; text-transform: uppercase; letter-spacing: .01em; }
+.explain-alias { font-size: .7rem; color: var(--soft); margin-top: 2px; font-weight: 600; }
+.explain-body { padding: 18px 20px; display: flex; flex-direction: column; gap: 13px; }
+.explain-intro { font-size: .8rem; color: var(--soft); line-height: 1.65; font-weight: 500; }
+.explain-list { display: flex; flex-direction: column; gap: 7px; }
+.explain-item { display: flex; align-items: flex-start; gap: 11px; padding: 9px 12px; border-radius: 10px; background: var(--xl); }
+.explain-letter {
+  min-width: 26px; height: 26px; padding: 0 5px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: .78rem;
+  background: var(--xc); color: #fff; flex-shrink: 0;
+}
+.explain-item-label { font-weight: 700; font-size: .8rem; margin-bottom: 1px; }
+.explain-item-desc { font-size: .73rem; color: var(--soft); line-height: 1.5; font-weight: 500; }
+.explain-use {
+  background: var(--bg); border: 2px dashed var(--border); border-radius: 10px;
+  padding: 11px 14px; font-size: .75rem; color: var(--soft); line-height: 1.6; font-weight: 500;
+}
+.explain-use strong { color: var(--ink); }
+
+.combo-note {
+  margin-top: 26px; background: #fff; border: 2px solid var(--ink); border-radius: 16px;
+  padding: 24px 28px; box-shadow: 5px 5px 0 var(--border);
+  display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;
+}
+.combo-icon {
+  width: 46px; height: 46px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--green), var(--purple));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; flex-shrink: 0;
+}
+.combo-note h3 { font-weight: 700; font-size: 1rem; margin-bottom: 7px; text-transform: uppercase; }
+.combo-note p { font-size: .82rem; color: var(--soft); line-height: 1.65; font-weight: 500; }
+.combo-note p strong { font-weight: 700; }
+
+.home-footer {
+  border-top: 2px solid var(--border); padding: 24px 0 0; margin-top: 48px;
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  font-size: .72rem; color: var(--muted); font-weight: 600;
+}
+
+/* ═══════ VISTAS DE HERRAMIENTA ═══════ */
+.tool-app { max-width: 1220px; margin: 0 auto; padding: 0 28px 80px; }
+
+.back-bar { padding: 22px 0 0; }
+.back-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: .78rem; font-weight: 700; color: var(--soft);
+  background: none; border: none; transition: color .15s;
+}
+.back-btn:hover { color: var(--ink); }
+.back-btn svg { transition: transform .15s; }
+.back-btn:hover svg { transform: translateX(-3px); }
+
+.tool-header {
+  padding: 26px 0 22px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 18px; flex-wrap: wrap; margin-bottom: 24px;
+  position: relative;
+}
+.tool-header::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 6px;
+  background: repeating-linear-gradient(-45deg, var(--ta) 0 10px, transparent 10px 20px);
+  border-radius: 3px;
+}
+.logo-area h1 {
+  font-weight: 700; font-size: clamp(2rem, 4.6vw, 3.1rem);
+  letter-spacing: -.03em; line-height: 1; text-transform: uppercase;
+  color: var(--ink);
+}
+.logo-area h1 .dot { color: var(--ta); }
+.logo-area p { font-size: .84rem; margin-top: 6px; color: var(--soft); font-weight: 500; }
+.header-actions { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; padding-bottom: 12px; }
+
+.project-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.project-label { font-size: .66rem; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); white-space: nowrap; }
+.project-input {
+  flex: 1; max-width: 440px;
+  border: 2px solid var(--ink); border-radius: 10px;
+  padding: 10px 15px;
+  font-family: 'Space Grotesk', sans-serif; font-size: .95rem; font-weight: 700;
+  color: var(--ink); background: #fff; outline: none;
+  box-shadow: 3px 3px 0 var(--border);
+  transition: box-shadow .15s;
+}
+.project-input:focus { box-shadow: 3px 3px 0 var(--ta); }
+
+.stats-bar {
+  display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.stat-chip {
+  background: #fff; border: 2px solid var(--ink); border-radius: 12px;
+  padding: 10px 18px; min-width: 96px;
+  box-shadow: 3px 3px 0 var(--sc, var(--border));
+}
+.stat-num { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.45rem; line-height: 1; color: var(--sc, var(--ink)); }
+.stat-label { font-size: .6rem; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-top: 4px; }
+
+.legend-bar {
+  display: flex; gap: 14px; flex-wrap: wrap; align-items: center;
+  margin-bottom: 22px; padding: 10px 16px;
+  background: #fff; border: 2px solid var(--border); border-radius: 10px;
+  font-size: .74rem; color: var(--soft); font-weight: 600;
+}
+.legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+.legend-hint { margin-left: auto; font-size: .7rem; color: var(--muted); font-style: italic; }
+
+/* tarjetas de categoría */
+.cat-card {
+  background: #fff; border: 2px solid var(--ink); border-radius: 14px;
+  overflow: hidden; display: flex; flex-direction: column;
+  box-shadow: 5px 5px 0 var(--cc);
+}
+.card-header {
+  display: flex; align-items: center; gap: 11px;
+  padding: 13px 15px;
+  border-bottom: 2px solid var(--ink);
+  background: var(--cl);
+}
+.card-badge {
+  min-width: 38px; height: 38px; padding: 0 8px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: .95rem;
+  background: var(--cc); color: #fff; flex-shrink: 0;
+}
+.card-title-wrap { flex: 1; min-width: 0; }
+.card-title { font-weight: 700; font-size: .92rem; text-transform: uppercase; letter-spacing: .01em; }
+.card-sub { font-size: .66rem; color: var(--soft); margin-top: 2px; font-weight: 500; line-height: 1.4; }
+.factor-count {
+  font-family: 'Space Grotesk', sans-serif; font-size: .8rem; font-weight: 700;
+  padding: 3px 11px; border-radius: 20px;
+  background: #fff; border: 2px solid var(--cc); color: var(--cc);
+  flex-shrink: 0;
+}
+
+.factors-list { padding: 10px 13px; display: flex; flex-direction: column; gap: 6px; flex: 1; min-height: 64px; }
+.factor-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px 10px; border-radius: 9px;
+  background: var(--cl);
+  border: 1.5px solid transparent;
+  animation: slideIn .18s ease;
+  transition: border-color .15s;
+}
+.factor-item:hover { border-color: var(--cc); }
+@keyframes slideIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+.factor-num {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: .68rem;
+  min-width: 19px; height: 19px; border-radius: 5px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--cc); color: #fff; flex-shrink: 0; margin-top: 2px;
+}
+.factor-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+.factor-text { flex: 1; font-size: .8rem; line-height: 1.5; font-weight: 500; color: var(--ink); cursor: text; min-width: 0; word-break: break-word; }
+.factor-text[contenteditable="true"]:focus { outline: none; background: rgba(255,255,255,.7); border-radius: 4px; padding: 1px 5px; }
+.factor-impact { display: flex; gap: 3px; flex-shrink: 0; margin-top: 1px; }
+.impact-btn {
+  width: 22px; height: 22px; border-radius: 6px;
+  border: 1.5px solid var(--border); background: #fff;
+  color: var(--muted); font-size: .68rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .12s;
+}
+.impact-btn:hover { border-color: var(--ink); color: var(--ink); }
+.impact-btn.on-pos { background: #d9f2e6; border-color: #059669; color: #047857; }
+.impact-btn.on-neg { background: #fbdfdf; border-color: #dc2626; color: #b91c1c; }
+.impact-btn.on-neu { background: #fdf0d5; border-color: #d97706; color: #b45309; }
+.delete-btn {
+  width: 22px; height: 22px; border-radius: 6px; border: none; background: none;
+  color: var(--muted); font-size: .95rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: all .12s; flex-shrink: 0;
+}
+.factor-item:hover .delete-btn { opacity: 1; }
+.delete-btn:hover { color: var(--red); background: #fbdfdf; }
+.empty-hint { text-align: center; font-size: .72rem; padding: 14px 0 6px; font-style: italic; color: var(--muted); font-weight: 500; }
+
+.add-area { padding: 6px 13px 13px; flex-shrink: 0; }
+.add-row { display: flex; gap: 6px; align-items: center; }
+.add-input {
+  flex: 1; border: 2px dashed var(--border); border-radius: 9px;
+  padding: 8px 12px; font-family: 'Inter', sans-serif; font-size: .78rem; font-weight: 500;
+  background: var(--bg); color: var(--ink); outline: none; transition: all .15s;
+}
+.add-input:focus { border-style: solid; border-color: var(--cc); background: #fff; }
+.add-input::placeholder { color: var(--muted); }
+.add-btn {
+  width: 33px; height: 33px; border-radius: 9px; border: 2px solid var(--ink);
+  background: var(--cc); color: #fff;
+  font-size: 1.15rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform .1s, box-shadow .1s; flex-shrink: 0;
+}
+.add-btn:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--ink); }
+.add-btn:active { transform: translate(2px,2px); box-shadow: 0 0 0 transparent; }
+
+/* rejillas */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 920px) { .grid-3 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 580px) { .grid-3 { grid-template-columns: 1fr; } }
+
+.axis-wrap { display: grid; grid-template-columns: 26px 1fr; grid-template-rows: 26px auto auto; gap: 2px 8px; align-items: center; }
+.axis-top { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.axis-lbl {
+  font-family: 'Space Grotesk', sans-serif; font-size: .64rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .12em; color: var(--muted); text-align: center;
+}
+.axis-side { writing-mode: vertical-rl; transform: rotate(180deg); }
+.axis-rows { display: grid; gap: 16px; margin-top: 8px; }
+
+/* ═══════ MODALES / TOAST ═══════ */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(22,32,58,.4); backdrop-filter: blur(4px);
+  z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: #fff; border: 2px solid var(--ink); border-radius: 16px;
+  padding: 28px; max-width: 540px; width: 100%;
+  box-shadow: 7px 7px 0 var(--border);
+  transform: scale(.96); transition: transform .2s;
+}
+.modal-backdrop.open .modal { transform: scale(1); }
+.modal h2 { font-weight: 700; font-size: 1.15rem; margin-bottom: 8px; text-transform: uppercase; }
+.modal p { font-size: .83rem; margin-bottom: 16px; line-height: 1.6; color: var(--soft); font-weight: 500; }
+.modal p strong { color: var(--ink); }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 18px; }
+.json-preview {
+  border: 2px solid var(--border); border-radius: 10px; padding: 13px;
+  font-family: monospace; font-size: .7rem; color: var(--soft);
+  max-height: 190px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;
+  background: var(--bg);
+}
+.drop-zone {
+  border: 2px dashed var(--border); border-radius: 12px;
+  padding: 28px 20px; text-align: center; cursor: pointer;
+  background: var(--bg); color: var(--soft); transition: all .18s;
+}
+.drop-zone:hover, .drop-zone.dragover { border-color: var(--indigo); background: #eceafd; }
+.drop-zone input { display: none; }
+.drop-zone p { font-size: .82rem; line-height: 1.7; margin: 0; }
+.drop-zone .icon { font-size: 1.9rem; display: block; margin-bottom: 8px; }
+
+.toast {
+  position: fixed; bottom: 26px; right: 26px;
+  padding: 12px 19px; border-radius: 12px;
+  font-size: .82rem; font-weight: 700;
+  border: 2px solid var(--ink);
+  transform: translateY(70px); opacity: 0;
+  transition: all .3s cubic-bezier(.34,1.56,.64,1);
+  z-index: 1000; pointer-events: none;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.ok { background: var(--ink); color: #fff; box-shadow: 4px 4px 0 rgba(22,32,58,.25); }
+.toast.err { background: #fbdfdf; color: #b91c1c; box-shadow: 4px 4px 0 #dc2626; }
+
+/* ═══════ PLANTILLA DE EXPORTACIÓN (carta horizontal 11 × 8.5) ═══════ */
+#exportDoc {
+  position: fixed; left: -20000px; top: 0;
+  width: 1320px; height: 1020px; /* proporción exacta 11:8.5 */
+  background: #ffffff;
+  font-family: 'Inter', sans-serif;
+  color: #16203a;
+  padding: 46px 50px;
+  display: flex; flex-direction: column;
+  z-index: -1;
+}
+.xp-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 20px; }
+.xp-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 46px; line-height: 1; letter-spacing: -.02em; text-transform: uppercase; }
+.xp-subtitle { font-size: 14px; font-weight: 600; color: #56607a; margin-top: 7px; }
+.xp-meta { text-align: right; }
+.xp-project { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 22px; }
+.xp-date { font-size: 13px; font-weight: 600; color: #8b94ac; margin-top: 4px; }
+.xp-rule { height: 7px; border-radius: 4px; margin-bottom: 16px; }
+.xp-stats { display: flex; gap: 12px; margin-bottom: 18px; }
+.xp-stat { border: 2px solid #16203a; border-radius: 11px; padding: 9px 18px; min-width: 110px; background: #fff; }
+.xp-stat-num { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 25px; line-height: 1; }
+.xp-stat-lbl { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: #8b94ac; margin-top: 4px; }
+.xp-grid { flex: 1; display: grid; gap: 16px; min-height: 0; }
+.xp-card { border: 2px solid #16203a; border-radius: 13px; overflow: hidden; display: flex; flex-direction: column; min-height: 0; background: #fff; }
+.xp-card-head { display: flex; align-items: center; gap: 11px; padding: 11px 14px; border-bottom: 2px solid #16203a; }
+.xp-badge { min-width: 34px; height: 34px; padding: 0 8px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; color: #fff; flex-shrink: 0; }
+.xp-card-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; text-transform: uppercase; flex: 1; }
+.xp-count { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14px; padding: 2px 12px; border-radius: 20px; background: #fff; }
+.xp-list { padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; overflow: hidden; flex: 1; }
+.xp-item { display: flex; align-items: flex-start; gap: 9px; font-size: 13px; line-height: 1.45; font-weight: 500; }
+.xp-item-num { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 11px; min-width: 19px; height: 19px; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; margin-top: 1px; }
+.xp-item-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.xp-empty { font-size: 12px; font-style: italic; color: #8b94ac; }
+.xp-foot { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #8b94ac; margin-top: 14px; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<style>
+/* ══════════ Botón de regreso COTE EMPRENDE ══════════ */
+.cote-nav{background:#14235C;position:sticky;top:0;z-index:9999;box-shadow:0 2px 10px rgba(20,35,92,.25);font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif;text-align:center}
+.cote-nav a{display:inline-block;color:#fff;text-decoration:none;padding:.8rem 1.6rem;font-weight:600;letter-spacing:.05em;font-size:.9rem;text-transform:uppercase;border-bottom:3px solid transparent;transition:background .2s,border-color .2s}
+.cote-nav a:hover,.cote-nav a:focus-visible{background:#1E3A8A;border-bottom-color:#C9A227;outline:none}
+.cote-nav a::before{content:"‹ ";color:#C9A227;font-weight:700}
+</style>
+</head>
+<body>
+<nav class="cote-nav" aria-label="Regresar al sitio">
+  <a href="../herramientas.html">Herramientas</a>
+</nav>
+
+
+<!-- ═══════ VISTA: HOME ═══════ -->
+<div id="view-home" class="view active">
+<div class="home-page">
+
+  <div class="hero">
+    <span class="hero-eyebrow">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Suite Estratégica · PEI. Roberto Mora
+    </span>
+    <h1>Herramientas de <span class="stripe">Análisis Estratégico</span></h1>
+    <p class="hero-desc">Diagnostique su organización con rigor. Tres marcos complementarios para comprender el entorno, evaluar la situación interna y tomar decisiones con claridad.</p>
+  </div>
+
+  <section>
+    <div class="section-label">Herramientas disponibles</div>
+    <div class="tool-cards">
+
+      <div class="tool-card" style="--tc:#059669; --tl:#e7f7f0; --td:#047857" onclick="showView('foda')">
+        <div class="tool-card-top">
+          <div class="tool-badge">F·O·D·A</div>
+          <div class="tool-arrow"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        </div>
+        <div>
+          <div class="tool-name">FODA</div>
+          <div class="tool-fullname">Fortalezas · Oportunidades · Debilidades · Amenazas</div>
+        </div>
+        <p class="tool-desc">Diagnóstico en cuatro cuadrantes que evalúa los factores internos de la organización y las condiciones del entorno externo.</p>
+        <div class="tool-tags"><span class="tag">Interno & Externo</span><span class="tag">Diagnóstico</span></div>
+      </div>
+
+      <div class="tool-card" style="--tc:#7c3aed; --tl:#f0e9fd; --td:#6d28d9" onclick="showView('pestel')">
+        <div class="tool-card-top">
+          <div class="tool-badge">PESTEL</div>
+          <div class="tool-arrow"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        </div>
+        <div>
+          <div class="tool-name">PESTEL</div>
+          <div class="tool-fullname">Político · Económico · Social · Tecnológico · Ecológico · Legal</div>
+        </div>
+        <p class="tool-desc">Marco de análisis del macroentorno que examina seis dimensiones del contexto externo para identificar oportunidades y riesgos.</p>
+        <div class="tool-tags"><span class="tag">Macroentorno</span><span class="tag">6 dimensiones</span></div>
+      </div>
+
+      <div class="tool-card" style="--tc:#4f46e5; --tl:#eceafd; --td:#4338ca" onclick="showView('faro')">
+        <div class="tool-card-top">
+          <div class="tool-badge">FARO</div>
+          <div class="tool-arrow"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+        </div>
+        <div>
+          <div class="tool-name">FARO</div>
+          <div class="tool-fullname">Fortalezas · Áreas de Mejora · Retos · Oportunidades</div>
+        </div>
+        <p class="tool-desc">La versión moderna del FODA: cambia el lenguaje defensivo por uno de optimización y crecimiento, ideal para emprendimientos.</p>
+        <div class="tool-tags"><span class="tag">Mentalidad proactiva</span><span class="tag">Emprendimiento</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">¿En qué consiste cada análisis?</div>
+    <div class="explain-grid">
+
+      <div class="explain-card">
+        <div class="explain-head" style="--eh:#e7f7f0; --ei:#059669">
+          <div class="explain-icon">FODA</div>
+          <div>
+            <div class="explain-title" style="color:#047857">Análisis FODA</div>
+            <div class="explain-alias">También conocido como DAFO o SWOT</div>
+          </div>
+        </div>
+        <div class="explain-body">
+          <p class="explain-intro">Evalúa la situación actual de una organización mediante cuatro categorías que cruzan factores internos con condiciones externas.</p>
+          <div class="explain-list">
+            <div class="explain-item" style="--xl:#e7f7f0; --xc:#059669"><div class="explain-letter">F</div><div><div class="explain-item-label">Fortalezas</div><div class="explain-item-desc">Capacidades y ventajas internas que distinguen a la organización.</div></div></div>
+            <div class="explain-item" style="--xl:#e9f0fe; --xc:#2563eb"><div class="explain-letter">O</div><div><div class="explain-item-label">Oportunidades</div><div class="explain-item-desc">Factores externos favorables que se pueden aprovechar.</div></div></div>
+            <div class="explain-item" style="--xl:#fdeaea; --xc:#dc2626"><div class="explain-letter">D</div><div><div class="explain-item-label">Debilidades</div><div class="explain-item-desc">Limitaciones internas que reducen la capacidad competitiva.</div></div></div>
+            <div class="explain-item" style="--xl:#fdefe6; --xc:#ea580c"><div class="explain-letter">A</div><div><div class="explain-item-label">Amenazas</div><div class="explain-item-desc">Condiciones externas que pueden obstaculizar los objetivos.</div></div></div>
+          </div>
+          <div class="explain-use"><strong>¿Cuándo usarlo?</strong> Al iniciar un proyecto, lanzar un producto o revisar la estrategia. Ideal como punto de partida.</div>
+        </div>
+      </div>
+
+      <div class="explain-card">
+        <div class="explain-head" style="--eh:#f0e9fd; --ei:#7c3aed">
+          <div class="explain-icon">PESTEL</div>
+          <div>
+            <div class="explain-title" style="color:#6d28d9">Análisis PESTEL</div>
+            <div class="explain-alias">Antes conocido como PEST o STEEP</div>
+          </div>
+        </div>
+        <div class="explain-body">
+          <p class="explain-intro">Examina seis dimensiones del contexto externo: fuerzas fuera del control de la empresa que influyen en su desempeño.</p>
+          <div class="explain-list">
+            <div class="explain-item" style="--xl:#fdeaea; --xc:#dc2626"><div class="explain-letter">P</div><div><div class="explain-item-label">Político</div><div class="explain-item-desc">Estabilidad gubernamental, políticas públicas, regulación.</div></div></div>
+            <div class="explain-item" style="--xl:#fdf3e1; --xc:#d97706"><div class="explain-letter">E</div><div><div class="explain-item-label">Económico</div><div class="explain-item-desc">Ciclos económicos, inflación, tasas de interés, desempleo.</div></div></div>
+            <div class="explain-item" style="--xl:#e7f7f0; --xc:#059669"><div class="explain-letter">S</div><div><div class="explain-item-label">Social</div><div class="explain-item-desc">Tendencias culturales, demografía, estilos de vida.</div></div></div>
+            <div class="explain-item" style="--xl:#e9f0fe; --xc:#2563eb"><div class="explain-letter">T</div><div><div class="explain-item-label">Tecnológico</div><div class="explain-item-desc">Innovación, automatización, digitalización, I+D.</div></div></div>
+            <div class="explain-item" style="--xl:#f0e9fd; --xc:#7c3aed"><div class="explain-letter">Ec</div><div><div class="explain-item-label">Ecológico</div><div class="explain-item-desc">Cambio climático, regulación ambiental, sostenibilidad.</div></div></div>
+            <div class="explain-item" style="--xl:#fce8f1; --xc:#db2777"><div class="explain-letter">L</div><div><div class="explain-item-label">Legal</div><div class="explain-item-desc">Legislación laboral, propiedad intelectual, normativa.</div></div></div>
+          </div>
+          <div class="explain-use"><strong>¿Cuándo usarlo?</strong> Para explorar mercados o anticipar riesgos. Sus hallazgos alimentan las Oportunidades y Amenazas del FODA.</div>
+        </div>
+      </div>
+
+      <div class="explain-card">
+        <div class="explain-head" style="--eh:#eceafd; --ei:#4f46e5">
+          <div class="explain-icon">FARO</div>
+          <div>
+            <div class="explain-title" style="color:#4338ca">Análisis FARO</div>
+            <div class="explain-alias">El FODA con mentalidad proactiva</div>
+          </div>
+        </div>
+        <div class="explain-body">
+          <p class="explain-intro">En ecosistemas de innovación, el lenguaje importa. FARO cambia el paradigma de "supervivencia y defensa" por uno de optimización y crecimiento.</p>
+          <div class="explain-list">
+            <div class="explain-item" style="--xl:#e7f7f0; --xc:#059669"><div class="explain-letter">F</div><div><div class="explain-item-label">Fortalezas</div><div class="explain-item-desc">Ventajas competitivas del proyecto o equipo.</div></div></div>
+            <div class="explain-item" style="--xl:#fdf3e1; --xc:#d97706"><div class="explain-letter">A</div><div><div class="explain-item-label">Áreas de Mejora</div><div class="explain-item-desc">En vez de "debilidades": procesos que están iterando, no rotos. Cultura de optimización continua.</div></div></div>
+            <div class="explain-item" style="--xl:#fce8ec; --xc:#e11d48"><div class="explain-letter">R</div><div><div class="explain-item-label">Retos</div><div class="explain-item-desc">En vez de "amenazas": desafíos del entorno que se superan con competitividad, no con miedo.</div></div></div>
+            <div class="explain-item" style="--xl:#e9f0fe; --xc:#2563eb"><div class="explain-letter">O</div><div><div class="explain-item-label">Oportunidades</div><div class="explain-item-desc">Nuevos escenarios y espacios de crecimiento.</div></div></div>
+          </div>
+          <div class="explain-use"><strong>¿Cuándo usarlo?</strong> En proyectos de emprendimiento y equipos jóvenes, donde el lenguaje defensivo del FODA puede frenar decisiones audaces.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="combo-note">
+    <div class="combo-icon">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6" opacity=".55"/></svg>
+    </div>
+    <div style="flex:1; min-width:240px">
+      <h3>¿Cómo se complementan?</h3>
+      <p>El <strong style="color:#6d28d9">PESTEL</strong> analiza el macroentorno externo, ideal para identificar qué está pasando alrededor. El <strong style="color:#047857">FODA</strong> toma esos hallazgos y los combina con la realidad interna. El <strong style="color:#4338ca">FARO</strong> es la alternativa moderna al FODA para proyectos de emprendimiento. Se recomienda <strong>hacer primero el PESTEL</strong> y usar sus resultados para las Oportunidades y Amenazas (o Retos) del análisis interno.</p>
+    </div>
+  </div>
+
+  <footer class="home-footer">
+    <p>Suite de Análisis Estratégico · FODA · PESTEL · FARO</p>
+    <p>Progreso guardado automáticamente en el navegador</p>
+  </footer>
+</div>
+</div>
+
+<!-- ═══════ VISTAS DE HERRAMIENTAS (se generan por JS) ═══════ -->
+<div id="view-foda" class="view"></div>
+<div id="view-pestel" class="view"></div>
+<div id="view-faro" class="view"></div>
+
+<!-- ═══════ MODALES COMPARTIDOS ═══════ -->
+<div class="modal-backdrop" id="saveModal" onclick="closeModal('saveModal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2>💾 Guardar progreso</h2>
+    <p>Descargue un archivo <strong>.json</strong> con todos los factores de su análisis. Podrá cargarlo después para continuar donde lo dejó.</p>
+    <div class="json-preview" id="jsonPreview"></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('saveModal')">Cancelar</button>
+      <button class="btn btn-fill" style="--bf:#16203a; --bs:#8b94ac" onclick="downloadJSON()">Descargar .json</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="loadModal" onclick="closeModal('loadModal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2>📂 Cargar progreso</h2>
+    <p>Seleccione o arrastre un archivo <strong>.json</strong> exportado previamente. El análisis actual será <strong>reemplazado</strong>.</p>
+    <div class="drop-zone" id="dropZone"
+      onclick="document.getElementById('fileInput').click()"
+      ondragover="event.preventDefault(); this.classList.add('dragover')"
+      ondragleave="this.classList.remove('dragover')"
+      ondrop="dropFile(event)">
+      <input type="file" id="fileInput" accept=".json,application/json" onchange="loadFileInput(event)">
+      <span class="icon">🗂️</span>
+      <p><strong>Haga clic aquí</strong> o arrastre su archivo<br><span style="font-size:.74rem">Solo archivos .json de esta herramienta</span></p>
+    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal('loadModal')">Cancelar</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="confirmModal" onclick="closeModal('confirmModal')">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:400px">
+    <h2 id="confirmTitle">¿Confirmar?</h2>
+    <p id="confirmText"></p>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal('confirmModal')">Cancelar</button>
+      <button class="btn btn-fill" style="--bf:#dc2626; --bs:#8b94ac" onclick="runConfirm()">Sí, continuar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Plantilla oculta para exportación en carta horizontal (11 × 8.5) -->
+<div id="exportDoc" aria-hidden="true"></div>
+
+<script>
+/* ══════════════════════════════════════
+   CONFIGURACIÓN DE LAS TRES HERRAMIENTAS
+══════════════════════════════════════ */
+const TOOLS = {
+  foda: {
+    name: 'FODA', app: 'Análisis FODA', ls: 'foda_v1', accent: '#059669',
+    tagline: 'Análisis estratégico interno y externo de la organización',
+    hasImpact: false, layout: 'quad',
+    axisTop: ['⬤ Interno', '◯ Externo'], axisSides: ['Positivo', 'Negativo'],
+    rows: [['F','O'], ['D','A']],
+    cats: [
+      { key:'F', label:'Fortalezas',    sub:'Capacidades internas que dan ventaja competitiva',       c:'#059669', l:'#e7f7f0' },
+      { key:'O', label:'Oportunidades', sub:'Factores externos que la organización puede aprovechar', c:'#2563eb', l:'#e9f0fe' },
+      { key:'D', label:'Debilidades',   sub:'Aspectos internos que limitan el desempeño',             c:'#dc2626', l:'#fdeaea' },
+      { key:'A', label:'Amenazas',      sub:'Factores externos que pueden afectar negativamente',     c:'#ea580c', l:'#fdefe6' }
+    ]
+  },
+  pestel: {
+    name: 'PESTEL', app: 'Análisis PESTEL', ls: 'pestel_v1', accent: '#7c3aed',
+    tagline: 'Herramienta de análisis estratégico del macroentorno',
+    hasImpact: true, layout: 'grid3',
+    cats: [
+      { key:'P',  label:'Político',    sub:'Regulaciones, gobiernos, políticas', c:'#dc2626', l:'#fdeaea' },
+      { key:'E',  label:'Económico',   sub:'Mercados, ciclos, finanzas',          c:'#d97706', l:'#fdf3e1' },
+      { key:'S',  label:'Social',      sub:'Demografía, cultura, tendencias',     c:'#059669', l:'#e7f7f0' },
+      { key:'T',  label:'Tecnológico', sub:'Innovación, automatización, I+D',     c:'#2563eb', l:'#e9f0fe' },
+      { key:'Ec', label:'Ecológico',   sub:'Medio ambiente, sostenibilidad',      c:'#7c3aed', l:'#f0e9fd' },
+      { key:'L',  label:'Legal',       sub:'Legislación, derechos, cumplimiento', c:'#db2777', l:'#fce8f1' }
+    ]
+  },
+  faro: {
+    name: 'FARO', app: 'Análisis FARO', ls: 'faro_v1', accent: '#4f46e5',
+    tagline: 'Navegación estratégica con mentalidad proactiva',
+    hasImpact: false, layout: 'quad',
+    axisTop: null, axisSides: ['Interno', 'Entorno'],
+    rows: [['F','A'], ['R','O']],
+    cats: [
+      { key:'F', label:'Fortalezas',      sub:'Ventajas competitivas del proyecto',        c:'#059669', l:'#e7f7f0' },
+      { key:'A', label:'Áreas de Mejora', sub:'Puntos críticos internos en optimización',  c:'#d97706', l:'#fdf3e1' },
+      { key:'R', label:'Retos',           sub:'Desafíos del entorno a superar',            c:'#e11d48', l:'#fce8ec' },
+      { key:'O', label:'Oportunidades',   sub:'Nuevos escenarios de crecimiento',          c:'#2563eb', l:'#e9f0fe' }
+    ]
+  }
+};
+
+// Estado de datos
+const data = {};
+Object.keys(TOOLS).forEach(t => {
+  data[t] = {};
+  TOOLS[t].cats.forEach(c => data[t][c.key] = []);
+});
+
+let currentTool = null;   // herramienta activa (para modales de guardar/cargar)
+let confirmCallback = null;
+
+/* ══════════════════════════════════════
+   UTILIDADES
+══════════════════════════════════════ */
+function esc(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function el(id) { return document.getElementById(id); }
+function catOf(t, k) { return TOOLS[t].cats.find(c => c.key === k); }
+function fechaHoy() { return new Date().toLocaleDateString('es-CR', { year:'numeric', month:'long', day:'numeric' }); }
+
+let toastT;
+function showToast(msg, type = 'ok') {
+  const tt = el('toast');
+  tt.textContent = msg;
+  tt.className = `toast ${type} show`;
+  clearTimeout(toastT);
+  toastT = setTimeout(() => tt.classList.remove('show'), 2800);
+}
+
+function closeModal(id) { el(id).classList.remove('open'); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') ['saveModal','loadModal','confirmModal'].forEach(closeModal);
+});
+
+function askConfirm(title, text, cb) {
+  el('confirmTitle').textContent = title;
+  el('confirmText').textContent = text;
+  confirmCallback = cb;
+  el('confirmModal').classList.add('open');
+}
+function runConfirm() {
+  closeModal('confirmModal');
+  if (confirmCallback) { confirmCallback(); confirmCallback = null; }
+}
+
+/* ══════════════════════════════════════
+   NAVEGACIÓN
+══════════════════════════════════════ */
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  el('view-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+  if (name !== 'home') {
+    currentTool = name;
+    buildToolView(name);
+    autoLoad(name);
+    updateStats(name);
+  }
+}
+
+/* ══════════════════════════════════════
+   CONSTRUCCIÓN DE VISTAS DE HERRAMIENTA
+══════════════════════════════════════ */
+function buildCard(t, cat) {
+  return `
+  <div class="cat-card" id="card-${t}-${cat.key}" style="--cc:${cat.c}; --cl:${cat.l}">
+    <div class="card-header">
+      <div class="card-badge">${cat.key}</div>
+      <div class="card-title-wrap">
+        <div class="card-title" style="color:${cat.c}">${cat.label}</div>
+        <div class="card-sub">${cat.sub}</div>
+      </div>
+      <span class="factor-count">0</span>
+    </div>
+    <div class="factors-list"><p class="empty-hint">Sin factores — añada el primero abajo</p></div>
+    <div class="add-area">
+      <div class="add-row">
+        <input class="add-input" id="inp-${t}-${cat.key}" placeholder="Agregar factor…"
+          onkeydown="if(event.key==='Enter') addFromInput('${t}','${cat.key}')"/>
+        <button class="add-btn" onclick="addFromInput('${t}','${cat.key}')">+</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildToolView(t) {
+  const cfg = TOOLS[t];
+  const view = el('view-' + t);
+  if (view.dataset.built) { cfg.cats.forEach(c => renderCard(t, c.key)); return; }
+
+  let statsHTML = '';
+  const statDefs = getStatDefs(t);
+  statDefs.forEach((s, i) => {
+    statsHTML += `<div class="stat-chip" style="--sc:${s.color}"><div class="stat-num" id="st-${t}-${i}">0</div><div class="stat-label">${s.label}</div></div>`;
+  });
+
+  let legendHTML = '';
+  if (cfg.hasImpact) {
+    legendHTML = `
+    <div class="legend-bar">
+      <span style="font-weight:800; color:var(--muted); text-transform:uppercase; font-size:.66rem; letter-spacing:.08em">Impacto:</span>
+      <span><span class="legend-dot" style="background:#059669"></span>Positivo (+)</span>
+      <span><span class="legend-dot" style="background:#dc2626"></span>Negativo (−)</span>
+      <span><span class="legend-dot" style="background:#d97706"></span>Neutro (≈)</span>
+      <span class="legend-hint">Clic en un texto para editarlo · Auto-guardado activo</span>
+    </div>`;
+  } else {
+    legendHTML = `
+    <div class="legend-bar">
+      ${cfg.cats.map(c => `<span><span class="legend-dot" style="background:${c.c}"></span>${c.label}</span>`).join('')}
+      <span class="legend-hint">Clic en un texto para editarlo · Auto-guardado activo</span>
+    </div>`;
+  }
+
+  let gridHTML = '';
+  if (cfg.layout === 'quad') {
+    const topAxis = cfg.axisTop
+      ? `<div class="axis-top"><div class="axis-lbl">${cfg.axisTop[0]}</div><div class="axis-lbl">${cfg.axisTop[1]}</div></div>`
+      : `<div></div>`;
+    gridHTML = `
+    <div class="axis-wrap">
+      <div></div>
+      ${topAxis}
+      <div class="axis-lbl axis-side">${cfg.axisSides[0]}</div>
+      <div class="grid-2">${cfg.rows[0].map(k => buildCard(t, catOf(t, k))).join('')}</div>
+      <div class="axis-lbl axis-side" style="grid-row:3">${cfg.axisSides[1]}</div>
+      <div class="grid-2" style="grid-row:3; margin-top:16px">${cfg.rows[1].map(k => buildCard(t, catOf(t, k))).join('')}</div>
+    </div>`;
+  } else {
+    gridHTML = `<div class="grid-3">${cfg.cats.map(c => buildCard(t, c)).join('')}</div>`;
+  }
+
+  view.innerHTML = `
+  <div class="tool-app">
+    <div class="back-bar">
+      <button class="back-btn" onclick="showView('home')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver al menú principal
+      </button>
+    </div>
+
+    <header class="tool-header" style="--ta:${cfg.accent}">
+      <div class="logo-area">
+        <h1>${cfg.name} <span class="dot">·</span></h1>
+        <p>${cfg.tagline}</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn" style="--bs:${cfg.accent}" onclick="openSaveModal('${t}')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Guardar
+        </button>
+        <button class="btn" style="--bs:${cfg.accent}" onclick="openLoadModal('${t}')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Cargar
+        </button>
+        <button class="btn btn-fill" id="btnPng-${t}" style="--bf:#7c3aed; --bs:#16203a" onclick="exportTool('${t}','png')">
+          <span class="btn-icon"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></span>
+          <span class="btn-txt">PNG</span>
+        </button>
+        <button class="btn btn-fill" id="btnPdf-${t}" style="--bf:#059669; --bs:#16203a" onclick="exportTool('${t}','pdf')">
+          <span class="btn-icon"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></span>
+          <span class="btn-txt">PDF</span>
+        </button>
+        <button class="btn btn-danger" onclick="clearAll('${t}')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M3 6h18M19 6l-1 14H6L5 6M8 6V4h8v2"/></svg>
+          Limpiar
+        </button>
+      </div>
+    </header>
+
+    <div class="project-bar" style="--ta:${cfg.accent}">
+      <span class="project-label">Proyecto</span>
+      <input type="text" id="project-${t}" class="project-input" placeholder="Nombre de la empresa u organización…" oninput="autoSave('${t}')"/>
+    </div>
+
+    <div class="stats-bar">${statsHTML}</div>
+    ${legendHTML}
+    ${gridHTML}
+  </div>`;
+
+  view.dataset.built = '1';
+  cfg.cats.forEach(c => renderCard(t, c.key));
+}
+
+/* ══════════════════════════════════════
+   ESTADÍSTICAS
+══════════════════════════════════════ */
+function getStatDefs(t) {
+  const cfg = TOOLS[t];
+  if (cfg.hasImpact) {
+    return [
+      { label:'Total',     color:'#16203a', fn: d => Object.values(d).flat().length },
+      { label:'Positivos', color:'#059669', fn: d => Object.values(d).flat().filter(f=>f.impact==='pos').length },
+      { label:'Negativos', color:'#dc2626', fn: d => Object.values(d).flat().filter(f=>f.impact==='neg').length },
+      { label:'Neutros',   color:'#d97706', fn: d => Object.values(d).flat().filter(f=>f.impact==='neu').length }
+    ];
+  }
+  return [
+    { label:'Total', color:'#16203a', fn: d => Object.values(d).flat().length },
+    ...cfg.cats.map(c => ({ label:c.label, color:c.c, fn: d => d[c.key].length }))
+  ];
+}
+
+function updateStats(t) {
+  getStatDefs(t).forEach((s, i) => {
+    const e = el(`st-${t}-${i}`);
+    if (e) e.textContent = s.fn(data[t]);
+  });
+}
+
+/* ══════════════════════════════════════
+   CRUD DE FACTORES
+══════════════════════════════════════ */
+function addFromInput(t, k) {
+  const inp = el(`inp-${t}-${k}`);
+  const text = inp.value.trim();
+  if (!text) return;
+  const item = { id: Date.now() + Math.random(), text };
+  if (TOOLS[t].hasImpact) item.impact = 'neu';
+  data[t][k].push(item);
+  inp.value = ''; inp.focus();
+  renderCard(t, k); updateStats(t); autoSave(t);
+}
+
+function deleteFactor(t, k, id) {
+  data[t][k] = data[t][k].filter(f => f.id !== id);
+  renderCard(t, k); updateStats(t); autoSave(t);
+}
+
+function setImpact(t, k, id, impact) {
+  const f = data[t][k].find(x => x.id === id);
+  if (f) f.impact = (f.impact === impact) ? 'neu' : impact;
+  renderCard(t, k); updateStats(t); autoSave(t);
+}
+
+function updateFactorText(t, k, id, text) {
+  const f = data[t][k].find(x => x.id === id);
+  if (f && text.trim()) f.text = text.trim();
+  autoSave(t);
+}
+
+function impactColor(i) { return i === 'pos' ? '#059669' : i === 'neg' ? '#dc2626' : '#d97706'; }
+
+function renderCard(t, k) {
+  const cat = catOf(t, k);
+  const card = el(`card-${t}-${k}`);
+  if (!card) return;
+  const factors = data[t][k];
+  card.querySelector('.factor-count').textContent = factors.length;
+
+  card.querySelector('.factors-list').innerHTML = factors.length === 0
+    ? `<p class="empty-hint">Sin factores — añada el primero abajo</p>`
+    : factors.map((f, i) => {
+        const marker = TOOLS[t].hasImpact
+          ? `<span class="factor-dot" style="background:${impactColor(f.impact)}"></span>`
+          : `<span class="factor-num">${i + 1}</span>`;
+        const impactBtns = TOOLS[t].hasImpact
+          ? `<div class="factor-impact">
+               <button class="impact-btn ${f.impact==='pos'?'on-pos':''}" title="Positivo" onclick="setImpact('${t}','${k}',${f.id},'pos')">+</button>
+               <button class="impact-btn ${f.impact==='neg'?'on-neg':''}" title="Negativo" onclick="setImpact('${t}','${k}',${f.id},'neg')">−</button>
+               <button class="impact-btn ${f.impact==='neu'?'on-neu':''}" title="Neutro"   onclick="setImpact('${t}','${k}',${f.id},'neu')">≈</button>
+             </div>`
+          : '';
+        return `
+        <div class="factor-item">
+          ${marker}
+          <span class="factor-text" contenteditable="true"
+            onblur="updateFactorText('${t}','${k}',${f.id},this.textContent)"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
+          >${esc(f.text)}</span>
+          ${impactBtns}
+          <button class="delete-btn" onclick="deleteFactor('${t}','${k}',${f.id})" title="Eliminar">×</button>
+        </div>`;
+      }).join('');
+}
+
+function clearAll(t) {
+  askConfirm('¿Eliminar todos los factores?', 'Se borrarán todos los factores del análisis ' + TOOLS[t].name + '. Esta acción no se puede deshacer.', () => {
+    TOOLS[t].cats.forEach(c => { data[t][c.key] = []; renderCard(t, c.key); });
+    el('project-' + t).value = '';
+    updateStats(t); autoSave(t);
+    showToast('Análisis limpiado', 'ok');
+  });
+}
+
+/* ══════════════════════════════════════
+   PERSISTENCIA (localStorage + JSON)
+══════════════════════════════════════ */
+function buildSnap(t) {
+  return { version: 1, appName: TOOLS[t].app, project: el('project-' + t).value || 'Sin título', savedAt: new Date().toISOString(), data: data[t] };
+}
+
+function autoSave(t) {
+  try { localStorage.setItem(TOOLS[t].ls, JSON.stringify(buildSnap(t))); } catch (e) {}
+}
+
+function applySnap(t, snap) {
+  TOOLS[t].cats.forEach(c => {
+    data[t][c.key] = (snap.data[c.key] || []).map(f => {
+      const item = { id: f.id || Date.now() + Math.random(), text: f.text || '' };
+      if (TOOLS[t].hasImpact) item.impact = f.impact || 'neu';
+      return item;
+    });
+  });
+  el('project-' + t).value = (snap.project && snap.project !== 'Sin título') ? snap.project : '';
+  TOOLS[t].cats.forEach(c => renderCard(t, c.key));
+  updateStats(t);
+}
+
+function autoLoad(t) {
+  try {
+    const raw = localStorage.getItem(TOOLS[t].ls);
+    if (!raw) return;
+    const snap = JSON.parse(raw);
+    if (!snap.data) return;
+    applySnap(t, snap);
+    if (Object.values(data[t]).flat().length > 0) showToast('✓ Progreso restaurado', 'ok');
+  } catch (e) {}
+}
+
+function openSaveModal(t) {
+  currentTool = t;
+  el('jsonPreview').textContent = JSON.stringify(buildSnap(t), null, 2);
+  el('saveModal').classList.add('open');
+}
+
+function downloadJSON() {
+  const t = currentTool;
+  const snap = buildSnap(t);
+  const slug = snap.project.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-]/g, '') || t;
+  const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${TOOLS[t].name}_${slug}_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  closeModal('saveModal');
+  showToast('✓ Archivo JSON descargado', 'ok');
+}
+
+function openLoadModal(t) {
+  currentTool = t;
+  el('loadModal').classList.add('open');
+}
+
+function loadJSONText(str) {
+  const t = currentTool;
+  try {
+    const snap = JSON.parse(str);
+    if (!snap.data) throw 0;
+    applySnap(t, snap);
+    autoSave(t);
+    closeModal('loadModal');
+    showToast('✓ Análisis cargado', 'ok');
+  } catch (e) {
+    showToast('✗ Archivo JSON inválido', 'err');
+  }
+}
+
+function loadFileInput(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => loadJSONText(ev.target.result);
+  r.readAsText(f);
+  e.target.value = '';
+}
+
+function dropFile(e) {
+  e.preventDefault();
+  el('dropZone').classList.remove('dragover');
+  const f = e.dataTransfer.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => loadJSONText(ev.target.result);
+  r.readAsText(f);
+}
+
+/* ══════════════════════════════════════
+   EXPORTACIÓN PNG / PDF
+   Carta horizontal: 11 × 8.5 pulgadas
+══════════════════════════════════════ */
+function buildExportDoc(t) {
+  const cfg = TOOLS[t];
+  const project = el('project-' + t).value.trim() || cfg.app;
+  const statDefs = getStatDefs(t);
+
+  const statsHTML = statDefs.map(s =>
+    `<div class="xp-stat"><div class="xp-stat-num" style="color:${s.color}">${s.fn(data[t])}</div><div class="xp-stat-lbl">${s.label}</div></div>`
+  ).join('');
+
+  const cardHTML = (cat) => {
+    const factors = data[t][cat.key];
+    const items = factors.length === 0
+      ? `<p class="xp-empty">Sin factores registrados</p>`
+      : factors.map((f, i) => {
+          const marker = cfg.hasImpact
+            ? `<span class="xp-item-dot" style="background:${impactColor(f.impact)}"></span>`
+            : `<span class="xp-item-num" style="background:${cat.c}">${i + 1}</span>`;
+          return `<div class="xp-item">${marker}<span>${esc(f.text)}</span></div>`;
+        }).join('');
+    return `
+    <div class="xp-card">
+      <div class="xp-card-head" style="background:${cat.l}">
+        <div class="xp-badge" style="background:${cat.c}">${cat.key}</div>
+        <div class="xp-card-title" style="color:${cat.c}">${cat.label}</div>
+        <div class="xp-count" style="border:2px solid ${cat.c}; color:${cat.c}">${factors.length}</div>
+      </div>
+      <div class="xp-list">${items}</div>
+    </div>`;
+  };
+
+  const gridCols = cfg.layout === 'grid3' ? 'grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(2,1fr)' : 'grid-template-columns:repeat(2,1fr); grid-template-rows:repeat(2,1fr)';
+  const orderedCats = cfg.layout === 'quad' ? [...cfg.rows[0], ...cfg.rows[1]].map(k => catOf(t, k)) : cfg.cats;
+
+  el('exportDoc').innerHTML = `
+    <div class="xp-head">
+      <div>
+        <div class="xp-title">${cfg.name}</div>
+        <div class="xp-subtitle">${cfg.tagline}</div>
+      </div>
+      <div class="xp-meta">
+        <div class="xp-project">${esc(project)}</div>
+        <div class="xp-date">${fechaHoy()}</div>
+      </div>
+    </div>
+    <div class="xp-rule" style="background:repeating-linear-gradient(-45deg, ${cfg.accent} 0 12px, #ffffff 12px 24px)"></div>
+    <div class="xp-stats">${statsHTML}</div>
+    <div class="xp-grid" style="${gridCols}">${orderedCats.map(cardHTML).join('')}</div>
+    <div class="xp-foot">
+      <span>${cfg.app} · Suite de Análisis Estratégico</span>
+      <span>Formato carta horizontal (11" × 8.5")</span>
+    </div>`;
+}
+
+function setBtnLoading(btn, loading, defaultText) {
+  if (!btn) return;
+  const txt = btn.querySelector('.btn-txt');
+  const icon = btn.querySelector('.btn-icon');
+  btn.disabled = loading;
+  if (txt) txt.textContent = loading ? 'Generando…' : defaultText;
+  if (icon) {
+    if (!icon.dataset.original) icon.dataset.original = icon.innerHTML;
+    icon.innerHTML = loading
+      ? '<svg class="spin" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>'
+      : icon.dataset.original;
+  }
+}
+
+async function exportTool(t, fmt) {
+  if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+    showToast('Las librerías aún no cargan. Intente en un segundo.', 'err');
+    return;
+  }
+  const btn = el(fmt === 'png' ? `btnPng-${t}` : `btnPdf-${t}`);
+  setBtnLoading(btn, true, fmt.toUpperCase());
+
+  try {
+    buildExportDoc(t);
+    // Pequeña espera para que el navegador aplique el layout de la plantilla
+    await new Promise(r => setTimeout(r, 120));
+
+    const canvas = await html2canvas(el('exportDoc'), {
+      scale: 2,               // 1320×1020 → 2640×2040 px (240 ppp en carta)
+      useCORS: true,
+      backgroundColor: '#ffffff'
+    });
+
+    const project = el('project-' + t).value.trim();
+    const slug = project ? '_' + project.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-]/g, '') : '';
+    const base = `${TOOLS[t].name}${slug}_${new Date().toISOString().slice(0,10)}`;
+
+    if (fmt === 'png') {
+      const link = document.createElement('a');
+      link.download = base + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('✓ PNG descargado (11" × 8.5")', 'ok');
+    } else {
+      const { jsPDF } = window.jspdf;
+      // Carta horizontal: 11 pulgadas de ancho × 8.5 de alto
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: 'letter' });
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 11, 8.5);
+      pdf.save(base + '.pdf');
+      showToast('✓ PDF descargado (carta horizontal)', 'ok');
+    }
+  } catch (error) {
+    console.error('Error en la exportación:', error);
+    showToast('✗ Ocurrió un error al exportar', 'err');
+  } finally {
+    el('exportDoc').innerHTML = '';
+    setBtnLoading(btn, false, fmt.toUpperCase());
+  }
+}
+</script>
+
+</body>
+</html>

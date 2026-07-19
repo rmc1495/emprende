@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COTE EMPRENDE - Expotécnica 2026</title>
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+<link rel="icon" href="img/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#14235C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --azul:#14235C;
+    --azul-claro:#1E3A8A;
+    --rojo:#A6192E;
+    --dorado:#C9A227;
+    --tinta:#22283A;
+    --gris:#5B6270;
+    --fondo:#FFFFFF;
+    --crema:#F7F8FB;
+    --borde:#E3E6EF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--fondo);
+    color:var(--tinta);
+    font-family:'Source Sans 3',system-ui,sans-serif;
+    line-height:1.7;
+    font-size:1.05rem;
+  }
+  .tricolor{display:flex;height:8px;width:100%}
+  .tricolor span:nth-child(1){flex:1;background:var(--azul)}
+  .tricolor span:nth-child(2){flex:1;background:#fff;border-top:1px solid #e5e7ee;border-bottom:1px solid #e5e7ee}
+  .tricolor span:nth-child(3){flex:2;background:var(--rojo)}
+  .tricolor span:nth-child(4){flex:1;background:#fff;border-top:1px solid #e5e7ee;border-bottom:1px solid #e5e7ee}
+  .tricolor span:nth-child(5){flex:1;background:var(--azul)}
+
+  header{background:#fff;padding:2rem 1.5rem 1.4rem;text-align:center}
+  .logos{
+    display:flex;justify-content:center;align-items:center;
+    gap:clamp(1.2rem,4vw,3rem);flex-wrap:wrap;margin-bottom:1.4rem;
+  }
+  .logos img{height:80px;width:auto;object-fit:contain}
+  .logos img.mep{height:150px;order:0}
+  .logos img.escudo{order:-1}
+  .logos img.cotepecos{order:1}
+  header h1{
+    font-family:'Libre Caslon Text',serif;color:var(--azul);
+    font-size:clamp(1.25rem,3vw,1.8rem);font-weight:700;line-height:1.3;
+  }
+  header .sub{
+    color:var(--gris);font-size:.9rem;letter-spacing:.14em;
+    text-transform:uppercase;margin-top:.4rem;font-weight:600;
+  }
+
+  nav{background:var(--azul);position:sticky;top:0;z-index:10;box-shadow:0 2px 10px rgba(20,35,92,.25)}
+  .nav-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:center;align-items:center;position:relative}
+  nav ul{list-style:none;display:flex;justify-content:center;flex-wrap:wrap}
+  nav a{
+    display:block;color:#fff;text-decoration:none;padding:.95rem 1.6rem;
+    font-weight:600;letter-spacing:.05em;font-size:.95rem;text-transform:uppercase;
+    border-bottom:3px solid transparent;transition:background .2s,border-color .2s;
+  }
+  nav a:hover,nav a:focus-visible{background:var(--azul-claro);border-bottom-color:var(--dorado);outline:none}
+  nav a[aria-current="page"]{border-bottom-color:var(--dorado)}
+  .menu-toggle{display:none;background:none;border:none;cursor:pointer;padding:.85rem 1rem;margin-left:auto}
+  .menu-toggle .etiqueta{
+    color:#fff;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    font-size:.9rem;vertical-align:middle;margin-right:.65rem;
+  }
+  .menu-toggle .barras{display:inline-block;width:26px;height:20px;position:relative;vertical-align:middle}
+  .menu-toggle .barras span{
+    position:absolute;left:0;width:100%;height:3px;background:#fff;border-radius:2px;
+    transition:transform .3s,opacity .3s,top .3s;
+  }
+  .menu-toggle .barras span:nth-child(1){top:0}
+  .menu-toggle .barras span:nth-child(2){top:8.5px}
+  .menu-toggle .barras span:nth-child(3){top:17px}
+  nav.abierto .barras span:nth-child(1){top:8.5px;transform:rotate(45deg)}
+  nav.abierto .barras span:nth-child(2){opacity:0}
+  nav.abierto .barras span:nth-child(3){top:8.5px;transform:rotate(-45deg)}
+  @media (max-width:900px){
+    .nav-inner{justify-content:flex-start}
+    .menu-toggle{display:block}
+    nav ul{
+      position:absolute;top:100%;left:0;right:0;background:var(--azul);
+      flex-direction:column;box-shadow:0 10px 18px rgba(20,35,92,.3);
+      max-height:0;overflow:hidden;transition:max-height .35s ease;
+    }
+    nav.abierto ul{max-height:320px}
+    nav ul a{padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.12);border-left:4px solid transparent}
+    nav ul a:hover,nav ul a:focus-visible{border-bottom-color:rgba(255,255,255,.12);border-left-color:var(--dorado)}
+    nav ul a[aria-current="page"]{border-bottom-color:rgba(255,255,255,.12);border-left-color:var(--dorado)}
+  }
+
+  /* ── Hero oscuro estilo cielo estrellado ── */
+  .hero{
+    position:relative;
+    overflow:hidden;
+    background:radial-gradient(ellipse at 30% 40%, #1a1f3d 0%, #0b0e1f 60%, #06070f 100%);
+    color:#fff;
+    text-align:center;
+    padding:2rem 1.5rem 2.2rem;
+  }
+  /* Capa 1: estrellas pequeñas que se desplazan lento */
+  .hero::before{
+    content:"";
+    position:absolute;
+    inset:-50% 0 0 0;
+    background-image:
+      radial-gradient(1px 1px at 13% 22%, rgba(255,255,255,.8) 50%, transparent 51%),
+      radial-gradient(1px 1px at 31% 64%, rgba(255,255,255,.6) 50%, transparent 51%),
+      radial-gradient(1px 1px at 47% 12%, rgba(255,255,255,.7) 50%, transparent 51%),
+      radial-gradient(1px 1px at 58% 79%, rgba(255,255,255,.5) 50%, transparent 51%),
+      radial-gradient(1px 1px at 71% 41%, rgba(255,255,255,.75) 50%, transparent 51%),
+      radial-gradient(1px 1px at 84% 88%, rgba(255,255,255,.6) 50%, transparent 51%),
+      radial-gradient(1px 1px at 93% 30%, rgba(255,255,255,.7) 50%, transparent 51%),
+      radial-gradient(1px 1px at 22% 92%, rgba(255,255,255,.55) 50%, transparent 51%),
+      radial-gradient(1px 1px at 66% 8%, rgba(255,255,255,.65) 50%, transparent 51%),
+      radial-gradient(1px 1px at 5% 55%, rgba(255,255,255,.6) 50%, transparent 51%);
+    background-size:100% 50%;
+    background-repeat:repeat-y;
+    animation:derivar 90s linear infinite;
+    pointer-events:none;
+  }
+  /* Capa 2: estrellas grandes que titilan */
+  .hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      radial-gradient(2px 2px at 18% 35%, rgba(255,255,255,.95) 50%, transparent 51%),
+      radial-gradient(2.5px 2.5px at 42% 68%, rgba(255,255,255,.85) 50%, transparent 51%),
+      radial-gradient(2px 2px at 63% 18%, rgba(255,255,255,.9) 50%, transparent 51%),
+      radial-gradient(2.5px 2.5px at 79% 58%, rgba(255,255,255,.8) 50%, transparent 51%),
+      radial-gradient(2px 2px at 90% 82%, rgba(255,255,255,.9) 50%, transparent 51%),
+      radial-gradient(2px 2px at 8% 78%, rgba(255,255,255,.85) 50%, transparent 51%),
+      radial-gradient(2.5px 2.5px at 52% 90%, rgba(255,255,255,.75) 50%, transparent 51%);
+    animation:titilar 3.5s ease-in-out infinite alternate;
+    pointer-events:none;
+  }
+  @keyframes derivar{
+    from{transform:translateY(0)}
+    to{transform:translateY(33.33%)}
+  }
+  @keyframes titilar{
+    0%{opacity:.35}
+    50%{opacity:1}
+    100%{opacity:.55}
+  }
+  /* El contenido del hero por encima de las capas de estrellas */
+  .hero-titulo,.hero-video-marco{position:relative;z-index:1}
+  @media (prefers-reduced-motion:reduce){
+    .hero::before,.hero::after{animation:none}
+  }
+  .hero-video-marco{
+    position:relative;
+    max-width:760px;
+    margin:0 auto;
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 10px 30px rgba(0,0,0,.5);
+  }
+  .hero-video{display:block;width:100%;height:auto}
+  .hero-titulo{
+    font-family:'Libre Caslon Text',serif;
+    font-style:italic;
+    font-size:clamp(1.15rem,2.8vw,1.6rem);
+    text-align:center;
+    margin-bottom:1.1rem;
+  }
+  .hero-titulo .anio{
+    font-style:normal;
+    color:var(--dorado);
+    letter-spacing:.06em;
+  }
+
+  main{max-width:960px;margin:0 auto;padding:3rem 1.5rem 4rem}
+
+  /* ── Carrusel + botones lado a lado ── */
+  .galeria-docs{
+    display:grid;
+    grid-template-columns:minmax(0,2fr) minmax(240px,1fr);
+    gap:2rem;
+    align-items:start;
+    margin-bottom:3.5rem;
+  }
+  @media (max-width:800px){
+    .galeria-docs{grid-template-columns:1fr}
+  }
+  .documentos{
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+  }
+  .documentos a{
+    display:block;
+    background:var(--azul);
+    color:#fff;
+    text-decoration:none;
+    text-align:center;
+    font-weight:600;
+    padding:.9rem 1.2rem;
+    border-radius:8px;
+    border-bottom:3px solid var(--dorado);
+    transition:background .2s,transform .15s;
+  }
+  .documentos a:hover,.documentos a:focus-visible{
+    background:var(--azul-claro);transform:translateY(-2px);outline:none;
+  }
+
+  h3.titulo-seccion{
+    font-family:'Libre Caslon Text',serif;
+    color:var(--azul);
+    font-size:clamp(1.4rem,3vw,1.8rem);
+    text-align:center;
+    margin-bottom:.4rem;
+  }
+  .filete{width:72px;height:4px;background:var(--dorado);margin:0 auto 1.8rem;border-radius:2px}
+
+  /* ── Carrusel ── */
+  .carrusel{
+    position:relative;
+    border-radius:10px;
+    overflow:hidden;
+    background:var(--crema);
+    border:1px solid var(--borde);
+    aspect-ratio:16/10;
+  }
+  .carrusel .pista{
+    display:flex;
+    height:100%;
+    transition:transform .5s ease;
+  }
+  .carrusel .pista img{
+    flex:0 0 100%;
+    width:100%;height:100%;
+    object-fit:cover;
+  }
+  .carrusel .flecha{
+    position:absolute;top:50%;transform:translateY(-50%);
+    background:rgba(20,35,92,.75);
+    border:none;color:#fff;
+    width:44px;height:44px;border-radius:50%;
+    font-size:1.4rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .2s;
+    z-index:2;
+  }
+  .carrusel .flecha:hover,.carrusel .flecha:focus-visible{background:var(--azul);outline:none}
+  .carrusel .flecha.izq{left:.8rem}
+  .carrusel .flecha.der{right:.8rem}
+  .carrusel .puntos{
+    position:absolute;bottom:.9rem;left:0;right:0;
+    display:flex;justify-content:center;gap:.5rem;z-index:2;
+  }
+  .carrusel .puntos button{
+    width:11px;height:11px;border-radius:50%;
+    border:none;cursor:pointer;
+    background:rgba(255,255,255,.55);
+    transition:background .2s,transform .2s;
+  }
+  .carrusel .puntos button[aria-current="true"]{background:var(--dorado);transform:scale(1.25)}
+  .carrusel .vacio{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--gris);text-align:center;padding:2rem;
+  }
+  .carrusel .vacio[hidden]{display:none}
+  .carrusel .pista img{cursor:zoom-in}
+
+  /* ── Visor de foto ampliada ── */
+  .visor{
+    position:fixed;inset:0;z-index:100;
+    background:rgba(6,7,15,.93);
+    display:flex;align-items:center;justify-content:center;
+    padding:2.5rem 1rem;
+    opacity:0;pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .visor.activo{opacity:1;pointer-events:auto}
+  .visor img{
+    max-width:min(1100px,95vw);
+    max-height:88vh;
+    object-fit:contain;
+    border-radius:6px;
+    box-shadow:0 20px 60px rgba(0,0,0,.6);
+  }
+  .visor .cerrar{
+    position:absolute;top:1rem;right:1rem;
+    background:rgba(255,255,255,.12);
+    border:none;color:#fff;
+    width:46px;height:46px;border-radius:50%;
+    font-size:1.5rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .2s;
+  }
+  .visor .cerrar:hover,.visor .cerrar:focus-visible{background:var(--rojo);outline:none}
+  .visor .flecha{
+    position:absolute;top:50%;transform:translateY(-50%);
+    background:rgba(255,255,255,.12);
+    border:none;color:#fff;
+    width:50px;height:50px;border-radius:50%;
+    font-size:1.6rem;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .2s;
+  }
+  .visor .flecha:hover,.visor .flecha:focus-visible{background:var(--azul-claro);outline:none}
+  .visor .flecha.izq{left:1rem}
+  .visor .flecha.der{right:1rem}
+  .visor .contador{
+    position:absolute;bottom:1.1rem;left:0;right:0;
+    text-align:center;color:#cfd6ea;
+    font-size:.95rem;letter-spacing:.05em;
+  }
+  @media (max-width:600px){
+    .visor{padding:1rem .5rem}
+    .visor .flecha{width:42px;height:42px}
+    .visor .flecha.izq{left:.4rem}
+    .visor .flecha.der{right:.4rem}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .visor{transition:none}
+  }
+
+  footer{background:var(--azul);color:#fff;text-align:center;padding:1.6rem 1rem;margin-top:0}
+  footer p{font-size:.98rem;letter-spacing:.04em}
+  footer .dorado{color:var(--dorado);font-weight:700}
+  footer .fecha{
+    margin-top:.35rem;
+    font-size:.85rem;
+    color:#aeb8d8;
+    letter-spacing:.03em;
+    text-transform:capitalize;
+  }
+
+  @media (max-width:600px){
+    .logos{gap:1rem}
+    .logos img{height:64px}
+    .logos img.mep{height:120px;order:-2;flex-basis:100%}
+    .carrusel .flecha{width:38px;height:38px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    nav ul{transition:none}
+    .menu-toggle .barras span{transition:none}
+    .carrusel .pista{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="tricolor" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+
+<header>
+  <div class="logos">
+    <img src="img/escudo.jpg" alt="Escudo del Colegio Técnico Profesional de Educación Comercial y de Servicios, 1978" class="escudo">
+    <img src="img/mep.jpg" alt="Ministerio de Educación Pública, Gobierno de Costa Rica" class="mep">
+    <img src="img/cotepecos.jpg" alt="COTEPECOS · Emprendimiento e Innovación MEP" class="cotepecos">
+  </div>
+  <h1>Emprendimiento e Innovación</h1>
+  <p class="sub">Colegio Técnico Profesional de Educación Comercial y de Servicios</p>
+</header>
+
+<nav id="menu" aria-label="Menú principal">
+  <div class="nav-inner">
+    <button class="menu-toggle" id="botonMenu" aria-expanded="false" aria-controls="listaMenu">
+      <span class="etiqueta">Menú</span>
+      <span class="barras" aria-hidden="true"><span></span><span></span><span></span></span>
+    </button>
+    <ul id="listaMenu">
+      <li><a href="index.html">Página principal</a></li>
+      <li><a href="herramientas.html">Herramientas</a></li>
+      <li><a href="materiales.html">Materiales</a></li>
+      <li><a href="expotecnica.html" aria-current="page">Expotécnica 2026</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero">
+  <h2 class="hero-titulo">Cuarta edición de la Expotécnica <span class="anio">2026</span></h2>
+  <div class="hero-video-marco">
+    <video class="hero-video" autoplay muted loop playsinline preload="auto">
+      <source src="video/expotecnica.mp4" type="video/mp4">
+    </video>
+  </div>
+</section>
+
+<main>
+  <div class="galeria-docs">
+    <div class="carrusel" id="carrusel" aria-roledescription="carrusel" aria-label="Galería de fotografías de la Expotécnica">
+      <div class="pista" id="pista"></div>
+      <button class="flecha izq" id="flechaIzq" aria-label="Fotografía anterior">‹</button>
+      <button class="flecha der" id="flechaDer" aria-label="Fotografía siguiente">›</button>
+      <div class="puntos" id="puntos"></div>
+      <p class="vacio" id="vacio" hidden>Aún no hay fotografías en la galería.<br>Suba imágenes a la carpeta <strong>galeria/</strong> con los nombres foto1.jpg, foto2.jpg…</p>
+    </div>
+
+    <nav class="documentos" aria-label="Documentos oficiales">
+      <a href="https://adminmepcr-my.sharepoint.com/:b:/g/personal/luis_mora_castro_mep_go_cr/IQAnJd-px9NbSorEEVMspTJAAaXp-y7HU5FScXzKav4JEqc?e=JzwBnc">Presentación Lineamientos</a>
+      <a href="https://adminmepcr-my.sharepoint.com/:b:/g/personal/luis_mora_castro_mep_go_cr/IQA_DDQgAJbWTqPfSxnYwUaXAdbL6R75InYbD3cSTWPiGEY?e=WFgKY1">Lineamientos 2026</a>
+      <a href="https://adminmepcr-my.sharepoint.com/:w:/g/personal/luis_mora_castro_mep_go_cr/IQDWPzo18UV9TqNIL-40NygIAUZuqKrvZ3ANi1luH3qOS6k?e=zYFCCw">Portada Oficial Expotécnica</a>
+      <a href="https://adminmepcr-my.sharepoint.com/:w:/g/personal/luis_mora_castro_mep_go_cr/IQCBqhpZ-Ik7S4jZqC7w6hxzAePK7ye6QA-eRknyF7W7XaE?e=4LoPlb">Portada Oficial 2026</a>
+    </nav>
+  </div>
+</main>
+
+<div class="tricolor" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+
+<footer>
+  <p><span class="dorado">PEI. Lic Roberto Mora Castro</span></p>
+  <p class="fecha" id="fechaHoy"></p>
+</footer>
+
+<div class="visor" id="visor" role="dialog" aria-modal="true" aria-label="Fotografía ampliada">
+  <button class="cerrar" id="visorCerrar" aria-label="Cerrar">✕</button>
+  <button class="flecha izq" id="visorIzq" aria-label="Fotografía anterior">‹</button>
+  <img id="visorImg" src="" alt="">
+  <button class="flecha der" id="visorDer" aria-label="Fotografía siguiente">›</button>
+  <p class="contador" id="visorContador"></p>
+</div>
+
+<script>
+  /* ══════════ Menú hamburguesa ══════════ */
+  const menu = document.getElementById('menu');
+  const boton = document.getElementById('botonMenu');
+  boton.addEventListener('click', () => {
+    const abierto = menu.classList.toggle('abierto');
+    boton.setAttribute('aria-expanded', abierto);
+  });
+  document.querySelectorAll('#listaMenu a').forEach(a => a.addEventListener('click', () => {
+    menu.classList.remove('abierto'); boton.setAttribute('aria-expanded','false');
+  }));
+  document.addEventListener('click', e => {
+    if (menu.classList.contains('abierto') && !menu.contains(e.target)) {
+      menu.classList.remove('abierto'); boton.setAttribute('aria-expanded','false');
+    }
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && menu.classList.contains('abierto')) {
+      menu.classList.remove('abierto'); boton.setAttribute('aria-expanded','false'); boton.focus();
+    }
+  });
+
+  /* ══════════ Carrusel automático desde la carpeta galeria/ ══════════
+     Cómo funciona: busca imágenes llamadas foto1, foto2, foto3…
+     (con extensión .jpg, .jpeg, .png o .webp) dentro de galeria/.
+     Para agregar fotos, solo súbalas a esa carpeta con el número
+     siguiente. No hay que tocar ningún código. */
+  const EXTENSIONES = ['webp','jpg','jpeg','png'];
+  const MAXIMO = 100;   // tope de fotos a buscar
+  const LOTE = 10;      // cuántas se verifican en paralelo
+  let extPreferida = null; // recuerda la extensión que funcionó para probarla primero
+
+  function probarImagen(n){
+    return new Promise(resolver => {
+      const orden = extPreferida
+        ? [extPreferida, ...EXTENSIONES.filter(e => e !== extPreferida)]
+        : EXTENSIONES;
+      let i = 0;
+      function intentar(){
+        if (i >= orden.length) return resolver(null);
+        const img = new Image();
+        const ruta = `galeria/foto${n}.${orden[i]}`;
+        img.onload = () => { extPreferida = orden[i]; resolver(ruta); };
+        img.onerror = () => { i++; intentar(); };
+        img.src = ruta;
+      }
+      intentar();
+    });
+  }
+
+  async function cargarGaleria(){
+    const rutas = [];
+    for (let inicio = 1; inicio <= MAXIMO; inicio += LOTE){
+      // Verificar un lote completo en paralelo (mucho más rápido que una por una)
+      const numeros = [];
+      for (let n = inicio; n < inicio + LOTE && n <= MAXIMO; n++) numeros.push(n);
+      const resultados = await Promise.all(numeros.map(probarImagen));
+      let corte = false;
+      for (const ruta of resultados){
+        if (!ruta){ corte = true; break; }  // primer número faltante: fin de la galería
+        rutas.push(ruta);
+      }
+      if (corte) break;
+    }
+    construirCarrusel(rutas);
+  }
+
+  let indice = 0, total = 0, temporizador = null;
+  const pista = document.getElementById('pista');
+  const puntos = document.getElementById('puntos');
+
+  function construirCarrusel(rutas){
+    total = rutas.length;
+    if (total === 0){
+      document.getElementById('vacio').hidden = false;
+      document.getElementById('flechaIzq').hidden = true;
+      document.getElementById('flechaDer').hidden = true;
+      return;
+    }
+    rutas.forEach((ruta, i) => {
+      const img = document.createElement('img');
+      img.src = ruta;
+      img.alt = `Fotografía ${i+1} de la Expotécnica`;
+      img.loading = i === 0 ? 'eager' : 'lazy';
+      pista.appendChild(img);
+      const p = document.createElement('button');
+      p.setAttribute('aria-label', `Ir a la fotografía ${i+1}`);
+      p.addEventListener('click', () => { irA(i); reiniciarAuto(); });
+      puntos.appendChild(p);
+    });
+    irA(0);
+    iniciarAuto();
+  }
+
+  function irA(i){
+    indice = (i + total) % total;
+    pista.style.transform = `translateX(-${indice * 100}%)`;
+    puntos.querySelectorAll('button').forEach((b, j) =>
+      b.setAttribute('aria-current', j === indice ? 'true' : 'false'));
+  }
+
+  function iniciarAuto(){
+    if (total < 2) return;
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      temporizador = setInterval(() => irA(indice + 1), 5000);
+    }
+  }
+  function reiniciarAuto(){ clearInterval(temporizador); iniciarAuto(); }
+
+  document.getElementById('flechaIzq').addEventListener('click', () => { irA(indice - 1); reiniciarAuto(); });
+  document.getElementById('flechaDer').addEventListener('click', () => { irA(indice + 1); reiniciarAuto(); });
+
+  // Pausar el avance automático mientras el cursor está encima
+  const carrusel = document.getElementById('carrusel');
+  carrusel.addEventListener('mouseenter', () => clearInterval(temporizador));
+  carrusel.addEventListener('mouseleave', iniciarAuto);
+
+  // Deslizar con el dedo en celular
+  let toqueX = null;
+  carrusel.addEventListener('touchstart', e => { toqueX = e.touches[0].clientX; }, {passive:true});
+  carrusel.addEventListener('touchend', e => {
+    if (toqueX === null) return;
+    const dif = e.changedTouches[0].clientX - toqueX;
+    if (Math.abs(dif) > 40){ irA(indice + (dif < 0 ? 1 : -1)); reiniciarAuto(); }
+    toqueX = null;
+  }, {passive:true});
+
+  cargarGaleria();
+
+  /* ══════════ Visor de foto ampliada ══════════ */
+  const visor = document.getElementById('visor');
+  const visorImg = document.getElementById('visorImg');
+  const visorContador = document.getElementById('visorContador');
+  let visorIndice = 0;
+
+  function abrirVisor(i){
+    const imagenes = pista.querySelectorAll('img');
+    if (!imagenes.length) return;
+    visorIndice = i;
+    visorImg.src = imagenes[visorIndice].src;
+    visorImg.alt = imagenes[visorIndice].alt;
+    visorContador.textContent = `${visorIndice + 1} / ${total}`;
+    visor.classList.add('activo');
+    document.body.style.overflow = 'hidden';   // bloquear el scroll de fondo
+    clearInterval(temporizador);               // pausar el carrusel
+  }
+  function cerrarVisor(){
+    visor.classList.remove('activo');
+    document.body.style.overflow = '';
+    iniciarAuto();
+  }
+  function visorIr(paso){
+    abrirVisor((visorIndice + paso + total) % total);
+  }
+
+  // Tocar una foto del carrusel la amplía
+  pista.addEventListener('click', e => {
+    if (e.target.tagName === 'IMG'){
+      const imagenes = [...pista.querySelectorAll('img')];
+      abrirVisor(imagenes.indexOf(e.target));
+    }
+  });
+
+  document.getElementById('visorCerrar').addEventListener('click', cerrarVisor);
+  document.getElementById('visorIzq').addEventListener('click', () => visorIr(-1));
+  document.getElementById('visorDer').addEventListener('click', () => visorIr(1));
+
+  // Tocar el fondo oscuro cierra el visor
+  visor.addEventListener('click', e => { if (e.target === visor) cerrarVisor(); });
+
+  // Teclado: Escape cierra, flechas navegan
+  document.addEventListener('keydown', e => {
+    if (!visor.classList.contains('activo')) return;
+    if (e.key === 'Escape') cerrarVisor();
+    if (e.key === 'ArrowLeft') visorIr(-1);
+    if (e.key === 'ArrowRight') visorIr(1);
+  });
+
+  // Deslizar con el dedo dentro del visor
+  let visorToqueX = null;
+  visor.addEventListener('touchstart', e => { visorToqueX = e.touches[0].clientX; }, {passive:true});
+  visor.addEventListener('touchend', e => {
+    if (visorToqueX === null) return;
+    const dif = e.changedTouches[0].clientX - visorToqueX;
+    if (Math.abs(dif) > 40) visorIr(dif < 0 ? 1 : -1);
+    visorToqueX = null;
+  }, {passive:true});
+
+  // Fecha del día en el pie de página
+  document.getElementById('fechaHoy').textContent =
+    new Date().toLocaleDateString('es-CR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+</script>
+
+
+</body>
+</html>
