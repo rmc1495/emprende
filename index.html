@@ -315,8 +315,9 @@
   .particulas span:nth-child(11){left:25%;width:5px;height:5px;--op:.21;--sway:28px;animation-duration:24s;animation-delay:19s}
   .particulas span:nth-child(12){left:94%;width:5px;height:5px;--op:.23;--sway:-22px;animation-duration:27s;animation-delay:3s}
 
-  /* El contenido va por encima de las partículas */
-  header,nav,main,footer,.tricolor{position:relative;z-index:1}
+  /* El contenido va por encima de las partículas (el nav conserva su prioridad superior) */
+  header,main,footer,.tricolor{position:relative;z-index:1}
+  nav{z-index:10}
 </style>
 </head>
 <body>
