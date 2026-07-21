@@ -197,6 +197,9 @@
     display:flex;
     flex-direction:column;
     gap:1rem;
+    background:none;
+    box-shadow:none;
+    position:static;
   }
   .documentos a{
     display:block;
@@ -207,7 +210,7 @@
     font-weight:600;
     padding:.9rem 1.2rem;
     border-radius:8px;
-    border-bottom:3px solid var(--dorado);
+    box-shadow:inset 0 -3px 0 var(--dorado);
     transition:background .2s,transform .15s;
   }
   .documentos a:hover,.documentos a:focus-visible{
@@ -400,12 +403,12 @@
       <p class="vacio" id="vacio" hidden>Aún no hay fotografías en la galería.<br>Suba imágenes a la carpeta <strong>galeria/</strong> con los nombres foto1.jpg, foto2.jpg…</p>
     </div>
 
-    <nav class="documentos" aria-label="Documentos oficiales">
+    <div class="documentos" role="navigation" aria-label="Documentos oficiales">
       <a href="https://adminmepcr-my.sharepoint.com/:b:/g/personal/luis_mora_castro_mep_go_cr/IQAnJd-px9NbSorEEVMspTJAAaXp-y7HU5FScXzKav4JEqc?e=JzwBnc">Presentación Lineamientos</a>
       <a href="https://adminmepcr-my.sharepoint.com/:b:/g/personal/luis_mora_castro_mep_go_cr/IQA_DDQgAJbWTqPfSxnYwUaXAdbL6R75InYbD3cSTWPiGEY?e=WFgKY1">Lineamientos 2026</a>
       <a href="https://adminmepcr-my.sharepoint.com/:w:/g/personal/luis_mora_castro_mep_go_cr/IQDWPzo18UV9TqNIL-40NygIAUZuqKrvZ3ANi1luH3qOS6k?e=zYFCCw">Portada Oficial Expotécnica</a>
-      <a href="https://adminmepcr-my.sharepoint.com/:w:/g/personal/luis_mora_castro_mep_go_cr/IQCBqhpZ-Ik7S4jZqC7w6hxzAePK7ye6QA-eRknyF7W7XaE?e=4LoPlb">Portada Oficial 2026</a>
-    </nav>
+      <a href="https://adminmepcr-my.sharepoint.com/:w:/g/personal/luis_mora_castro_mep_go_cr/IQCBqhpZ-Ik7S4jZqC7w6hxzAePK7ye6QA-eRknyF7W7XaE?e=4LoPlb">Bitácora</a>
+    </div>
   </div>
 </main>
 
