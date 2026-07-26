@@ -154,7 +154,33 @@
     100%{opacity:.55}
   }
   /* El contenido del hero por encima de las capas de estrellas */
-  .hero-titulo,.hero-video-marco{position:relative;z-index:1}
+  .hero-titulo,.hero-video-marco,.hero-desc{position:relative;z-index:1}
+  .hero-desc{
+    max-width:720px;
+    margin:1.8rem auto 0;
+    color:#dde3f5;
+    font-size:clamp(.95rem,2vw,1.08rem);
+    line-height:1.75;
+    text-align:left;
+  }
+  .hero-desc p{margin-bottom:.6rem}
+  .hero-desc ul{
+    list-style:none;
+    margin:.3rem 0 0 .5rem;
+  }
+  .hero-desc ul li{
+    padding:.3rem 0 .3rem 1.4rem;
+    position:relative;
+  }
+  .hero-desc ul li::before{
+    content:"•";
+    position:absolute;left:0;
+    color:var(--dorado);
+    font-weight:700;
+    font-size:1.1rem;
+    line-height:1.5;
+  }
+  .hero-desc strong{color:#fff;font-weight:700}
   @media (prefers-reduced-motion:reduce){
     .hero::before,.hero::after{animation:none}
   }
@@ -391,6 +417,13 @@
       <source src="video/expotecnica.mp4" type="video/mp4">
     </video>
   </div>
+  <div class="hero-desc">
+    <p>La ExpoTÉCNICA tiene como propósito fomentar la creatividad, la innovación, el pensamiento crítico y la resolución de problemas mediante el desarrollo de proyectos en dos categorías principales:</p>
+    <ul>
+      <li><strong>Desafío STEAM,</strong> orientado a la solución de problemáticas mediante la integración de ciencia, tecnología, ingeniería, arte y matemáticas.</li>
+      <li><strong>Emprendimiento e innovación,</strong> enfocado en el desarrollo de ideas con potencial de impacto económico y social.</li>
+    </ul>
+  </div>
 </section>
 
 <main>
@@ -404,8 +437,8 @@
     </div>
 
     <div class="documentos" role="navigation" aria-label="Documentos oficiales">
-      <a href="https://adminmepcr-my.sharepoint.com/:b:/g/personal/luis_mora_castro_mep_go_cr/IQA_DDQgAJbWTqPfSxnYwUaXAdGWfTrucAIdg8Lz2Tp2T5M?e=pKHYCB">Presentación Lineamientos</a>
-      <a href="https://adminmepcr-my.sharepoint.com/:b:/g/personal/luis_mora_castro_mep_go_cr/IQAnJd-px9NbSorEEVMspTJAARXWqJvpC6EgKwkoneLWl4o?e=1InYWi">Lineamientos 2026</a>
+      <a href="https://adminmepcr-my.sharepoint.com/:b:/g/personal/luis_mora_castro_mep_go_cr/IQAnJd-px9NbSorEEVMspTJAAaXp-y7HU5FScXzKav4JEqc?e=JzwBnc">Presentación Lineamientos</a>
+      <a href="https://adminmepcr-my.sharepoint.com/:b:/g/personal/luis_mora_castro_mep_go_cr/IQA_DDQgAJbWTqPfSxnYwUaXAdbL6R75InYbD3cSTWPiGEY?e=WFgKY1">Lineamientos 2026</a>
       <a href="https://adminmepcr-my.sharepoint.com/:w:/g/personal/luis_mora_castro_mep_go_cr/IQDWPzo18UV9TqNIL-40NygIAUZuqKrvZ3ANi1luH3qOS6k?e=zYFCCw">Portada Oficial Expotécnica</a>
       <a href="https://adminmepcr-my.sharepoint.com/:w:/g/personal/luis_mora_castro_mep_go_cr/IQCBqhpZ-Ik7S4jZqC7w6hxzAePK7ye6QA-eRknyF7W7XaE?e=4LoPlb">Bitácora</a>
     </div>
