@@ -1206,17 +1206,196 @@ function fitExportText(t) {
   return false;
 }
 
+/* ══════════════════════════════════════
+   PDF CON TEXTO REAL (seleccionable y buscable)
+   Se dibuja con jsPDF en carta horizontal (792 × 612 pt)
+══════════════════════════════════════ */
+// Las fuentes estándar del PDF solo admiten caracteres latinos (incluye tildes y ñ)
+function pdfSafe(s) {
+  return String(s)
+    .replace(/[—–−]/g, '-')
+    .replace(/[“”«»]/g, '"')
+    .replace(/[‘’]/g, "'")
+    .replace(/…/g, '...')
+    .replace(/[•∙]/g, '·')
+    .replace(/≈/g, '~')
+    .replace(/[^\x09\x0A\x0D\x20-\x7E\xA0-\xFF]/g, '');
+}
+
+function buildTextPDF(t) {
+  const { jsPDF } = window.jspdf;
+  const cfg = TOOLS[t];
+  const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'letter' });
+  const W = 792, H = 612, M = 32;
+  const INK = '#16203a', SOFT = '#56607a', MUTED = '#8b94ac', WHITE = '#ffffff';
+  const project = el('project-' + t).value.trim() || cfg.app;
+
+  pdf.setProperties({ title: pdfSafe(`${cfg.app} - ${project}`), subject: pdfSafe(cfg.tagline), creator: 'Suite de Analisis Estrategico' });
+
+  /* Encabezado */
+  let y = M;
+  pdf.setFont('helvetica', 'bold'); pdf.setFontSize(30); pdf.setTextColor(INK);
+  pdf.text(cfg.name, M, y, { baseline: 'top' });
+  pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9); pdf.setTextColor(SOFT);
+  pdf.text(pdfSafe(cfg.tagline), M, y + 34, { baseline: 'top' });
+
+  pdf.setFont('helvetica', 'bold'); pdf.setFontSize(13); pdf.setTextColor(INK);
+  const pl = pdf.splitTextToSize(pdfSafe(project), 420);
+  pl.forEach((l, i) => pdf.text(l, W - M, y + i * 16, { align: 'right', baseline: 'top' }));
+  pdf.setFont('helvetica', 'normal'); pdf.setFontSize(8.5); pdf.setTextColor(MUTED);
+  pdf.text(pdfSafe(fechaHoy()), W - M, y + pl.length * 16 + 3, { align: 'right', baseline: 'top' });
+  y = Math.max(y + 50, y + pl.length * 16 + 18);
+
+  /* Franja de color */
+  pdf.setFillColor(cfg.accent);
+  for (let x = M; x < W - M - 10; x += 14) pdf.lines([[8, 0], [-3, 4], [-8, 0]], x + 3, y, [1, 1], 'F', true);
+  y += 12;
+
+  /* Estadísticas */
+  let sx = M;
+  getStatDefs(t).forEach(s => {
+    const lbl = pdfSafe(s.label.toUpperCase());
+    pdf.setFont('helvetica', 'bold'); pdf.setFontSize(6);
+    const w = Math.max(62, pdf.getTextWidth(lbl) + 22);
+    pdf.setDrawColor(INK); pdf.setLineWidth(1.1); pdf.setFillColor(WHITE);
+    pdf.roundedRect(sx, y, w, 36, 6, 6, 'FD');
+    pdf.setFontSize(15); pdf.setTextColor(s.color);
+    pdf.text(String(s.fn(data[t])), sx + 10, y + 7, { baseline: 'top' });
+    pdf.setFontSize(6); pdf.setTextColor(MUTED);
+    pdf.text(lbl, sx + 10, y + 26, { baseline: 'top' });
+    sx += w + 8;
+  });
+  y += 36 + 12;
+
+  /* Geometría de la rejilla */
+  const footY = H - M - 6;
+  const GAP = 10, HEAD = 26, PT = 8, PB = 8, PX = 10;
+  const cols = cfg.layout === 'grid3' ? 3 : 2;
+  const cats = cfg.layout === 'quad' ? [...cfg.rows[0], ...cfg.rows[1]].map(k => catOf(t, k)) : cfg.cats;
+  const nRows = Math.ceil(cats.length / cols);
+  const cardW = (W - 2 * M - GAP * (cols - 1)) / cols;
+  const avail = (footY - 10) - y - GAP * (nRows - 1);
+
+  // Calcula el acomodo para un tamaño de letra dado
+  const layoutAt = fs => {
+    pdf.setFont('helvetica', 'normal'); pdf.setFontSize(fs);
+    const mark = fs * 1.3, mgap = fs * 0.6, lh = fs * 1.32, igap = fs * 0.45;
+    const textW = cardW - 2 * PX - mark - mgap;
+    const wrapped = cats.map(c => data[t][c.key].map(f => pdf.splitTextToSize(pdfSafe(f.text), textW)));
+    const needs = wrapped.map(ws => HEAD + PT + PB +
+      (ws.length ? ws.reduce((a, l) => a + Math.max(l.length * lh, mark), 0) + igap * (ws.length - 1) : lh));
+    const rowNeed = [];
+    for (let r = 0; r < nRows; r++) rowNeed.push(Math.max(...needs.slice(r * cols, (r + 1) * cols)));
+    const total = rowNeed.reduce((a, b) => a + b, 0);
+    let shares = rowNeed.map(n => Math.max(n / total, 0.32));
+    const sum = shares.reduce((a, b) => a + b, 0);
+    const rowH = shares.map(s => s / sum * avail);
+    const fits = needs.every((n, i) => n <= rowH[Math.floor(i / cols)] + 0.5);
+    return { fs, mark, mgap, lh, igap, wrapped, rowH, fits };
+  };
+
+  let L;
+  for (let fs = 10; fs >= 5.5; fs -= 0.25) { L = layoutAt(fs); if (L.fits) break; }
+
+  /* Tarjetas */
+  let cy = y;
+  for (let r = 0; r < nRows; r++) {
+    const h = L.rowH[r];
+    for (let ci = 0; ci < cols; ci++) {
+      const i = r * cols + ci;
+      const cat = cats[i];
+      if (!cat) continue;
+      const x = M + ci * (cardW + GAP);
+      const factors = data[t][cat.key];
+
+      // fondo, encabezado y borde
+      pdf.setLineWidth(1.1); pdf.setDrawColor(INK);
+      pdf.setFillColor(WHITE); pdf.roundedRect(x, cy, cardW, h, 8, 8, 'F');
+      pdf.setFillColor(cat.l); pdf.roundedRect(x, cy, cardW, HEAD + 8, 8, 8, 'F');
+      pdf.setFillColor(WHITE); pdf.rect(x + 0.6, cy + HEAD, cardW - 1.2, 8, 'F');
+      pdf.line(x, cy + HEAD, x + cardW, cy + HEAD);
+      pdf.roundedRect(x, cy, cardW, h, 8, 8, 'S');
+
+      // insignia con la letra
+      pdf.setFont('helvetica', 'bold'); pdf.setFontSize(9);
+      const bw = Math.max(16, pdf.getTextWidth(cat.key) + 8);
+      pdf.setFillColor(cat.c); pdf.roundedRect(x + 8, cy + 5, bw, 16, 4, 4, 'F');
+      pdf.setTextColor(WHITE);
+      pdf.text(cat.key, x + 8 + bw / 2, cy + 13, { align: 'center', baseline: 'middle' });
+
+      // título
+      pdf.setFontSize(10); pdf.setTextColor(cat.c);
+      pdf.text(pdfSafe(cat.label.toUpperCase()), x + 8 + bw + 7, cy + 13, { baseline: 'middle' });
+
+      // contador
+      pdf.setFontSize(8);
+      const cnt = String(factors.length);
+      const pw = Math.max(22, pdf.getTextWidth(cnt) + 14);
+      pdf.setDrawColor(cat.c); pdf.setFillColor(WHITE);
+      pdf.roundedRect(x + cardW - 8 - pw, cy + 6, pw, 14, 7, 7, 'FD');
+      pdf.text(cnt, x + cardW - 8 - pw / 2, cy + 13, { align: 'center', baseline: 'middle' });
+
+      // factores
+      let iy = cy + HEAD + PT;
+      const bottom = cy + h - PB;
+      if (factors.length === 0) {
+        pdf.setFont('helvetica', 'italic'); pdf.setFontSize(L.fs); pdf.setTextColor(MUTED);
+        pdf.text('Sin factores registrados', x + PX, iy + L.lh / 2, { baseline: 'middle' });
+      }
+      factors.forEach((f, j) => {
+        const lines = L.wrapped[i][j];
+        const ih = Math.max(lines.length * L.lh, L.mark);
+        if (iy + ih > bottom + 0.5) return;            // solo ocurre si no cupo ni con letra mínima
+        const midY = iy + L.lh / 2;
+        if (cfg.hasImpact) {
+          pdf.setFillColor(impactColor(f.impact));
+          pdf.circle(x + PX + L.mark / 2, midY, L.fs * 0.32, 'F');
+        } else {
+          pdf.setFillColor(cat.c);
+          pdf.roundedRect(x + PX, midY - L.mark / 2, L.mark, L.mark, 2, 2, 'F');
+          pdf.setFont('helvetica', 'bold'); pdf.setFontSize(L.fs * 0.78); pdf.setTextColor(WHITE);
+          pdf.text(String(j + 1), x + PX + L.mark / 2, midY, { align: 'center', baseline: 'middle' });
+        }
+        pdf.setFont('helvetica', 'normal'); pdf.setFontSize(L.fs); pdf.setTextColor(INK);
+        lines.forEach((ln, k) => pdf.text(ln, x + PX + L.mark + L.mgap, iy + k * L.lh + L.lh / 2, { baseline: 'middle' }));
+        iy += ih + L.igap;
+      });
+    }
+    cy += h + GAP;
+  }
+
+  /* Pie de página */
+  pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7); pdf.setTextColor(MUTED);
+  pdf.text(pdfSafe(`${cfg.app} · Suite de Análisis Estratégico`), M, footY, { baseline: 'top' });
+  pdf.text('Formato carta horizontal (11" × 8.5")', W - M, footY, { align: 'right', baseline: 'top' });
+
+  return { pdf, fits: L.fits };
+}
+
 async function exportTool(t, fmt) {
-  if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+  if (typeof window.jspdf === 'undefined' || (fmt === 'png' && typeof html2canvas === 'undefined')) {
     showToast('Las librerías aún no cargan. Intente en un segundo.', 'err');
     return;
   }
   const btn = el(fmt === 'png' ? `btnPng-${t}` : `btnPdf-${t}`);
   setBtnLoading(btn, true, fmt.toUpperCase());
 
+  const project = el('project-' + t).value.trim();
+  const slug = project ? '_' + project.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-]/g, '') : '';
+  const base = `${TOOLS[t].name}${slug}_${new Date().toISOString().slice(0,10)}`;
+
   try {
+    if (fmt === 'pdf') {
+      // PDF vectorial: el texto se puede seleccionar, copiar y buscar
+      const { pdf, fits } = buildTextPDF(t);
+      pdf.save(base + '.pdf');
+      if (fits) showToast('✓ PDF descargado (texto seleccionable)', 'ok');
+      else showToast('PDF descargado, pero hay mucho texto: algunos factores no cupieron. Resuma los más largos.', 'err');
+      return;
+    }
+
+    // PNG: imagen de la plantilla HTML
     buildExportDoc(t);
-    // Esperar fuentes y layout antes de medir
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
     await new Promise(r => setTimeout(r, 120));
     const cupo = fitExportText(t);
@@ -1228,25 +1407,11 @@ async function exportTool(t, fmt) {
       useCORS: true,
       backgroundColor: '#ffffff'
     });
-
-    const project = el('project-' + t).value.trim();
-    const slug = project ? '_' + project.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_\-]/g, '') : '';
-    const base = `${TOOLS[t].name}${slug}_${new Date().toISOString().slice(0,10)}`;
-
-    if (fmt === 'png') {
-      const link = document.createElement('a');
-      link.download = base + '.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      showToast('✓ PNG descargado (11" × 8.5")', 'ok');
-    } else {
-      const { jsPDF } = window.jspdf;
-      // Carta horizontal: 11 pulgadas de ancho × 8.5 de alto
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'in', format: 'letter' });
-      pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 11, 8.5);
-      pdf.save(base + '.pdf');
-      showToast('✓ PDF descargado (carta horizontal)', 'ok');
-    }
+    const link = document.createElement('a');
+    link.download = base + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    if (cupo) showToast('✓ PNG descargado (11" × 8.5")', 'ok');
   } catch (error) {
     console.error('Error en la exportación:', error);
     showToast('✗ Ocurrió un error al exportar', 'err');
@@ -1256,6 +1421,7 @@ async function exportTool(t, fmt) {
     setBtnLoading(btn, false, fmt.toUpperCase());
   }
 }
+
 </script>
 
 </body>
