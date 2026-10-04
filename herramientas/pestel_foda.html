@@ -444,11 +444,12 @@ h1, h2, h3, h4, .grotesk { font-family: 'Space Grotesk', sans-serif; }
 .xp-badge { min-width: 34px; height: 34px; padding: 0 8px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; color: #fff; flex-shrink: 0; }
 .xp-card-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px; text-transform: uppercase; flex: 1; }
 .xp-count { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14px; padding: 2px 12px; border-radius: 20px; background: #fff; }
-.xp-list { padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; overflow: hidden; flex: 1; }
-.xp-item { display: flex; align-items: flex-start; gap: 9px; font-size: 13px; line-height: 1.45; font-weight: 500; }
-.xp-item-num { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 11px; min-width: 19px; height: 19px; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; margin-top: 1px; }
-.xp-item-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
-.xp-empty { font-size: 12px; font-style: italic; color: #8b94ac; }
+/* El tamaño de letra de los factores (--xf) se ajusta solo en fitExportText() */
+.xp-list { padding: .7em 14px; display: flex; flex-direction: column; gap: .4em; overflow: hidden; flex: 1; font-size: var(--xf, 13px); }
+.xp-item { display: flex; align-items: flex-start; gap: .65em; font-size: 1em; line-height: 1.4; font-weight: 500; }
+.xp-item-num { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: .82em; min-width: 1.7em; height: 1.7em; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; margin-top: .05em; }
+.xp-item-dot { width: .7em; height: .7em; border-radius: 50%; flex-shrink: 0; margin-top: .38em; }
+.xp-empty { font-size: .92em; font-style: italic; color: #8b94ac; }
 .xp-foot { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: #8b94ac; margin-top: 14px; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
@@ -1156,6 +1157,55 @@ function setBtnLoading(btn, loading, defaultText) {
   }
 }
 
+/* Ajusta la letra y la altura de las filas para que todos los factores quepan */
+function fitExportText(t) {
+  const doc = el('exportDoc');
+  const grid = doc.querySelector('.xp-grid');
+  const cards = [...grid.querySelectorAll('.xp-card')];
+  const cols = TOOLS[t].layout === 'grid3' ? 3 : 2;
+  const nRows = Math.ceil(cards.length / cols);
+
+  // Altura natural del contenido de una tarjeta (encabezado + lista completa)
+  const naturalHeight = card => {
+    const list = card.querySelector('.xp-list');
+    const cs = getComputedStyle(list);
+    const kids = [...list.children];
+    const gap = parseFloat(cs.rowGap) || 0;
+    const content = kids.reduce((a, k) => a + k.offsetHeight, 0) + gap * Math.max(0, kids.length - 1);
+    return card.querySelector('.xp-card-head').offsetHeight + content
+      + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + 4;
+  };
+
+  // Reparte la altura entre filas según cuánto texto tiene cada una
+  const balanceRows = () => {
+    const need = [];
+    for (let r = 0; r < nRows; r++) {
+      need.push(Math.max(...cards.slice(r * cols, (r + 1) * cols).map(naturalHeight)));
+    }
+    const total = need.reduce((a, b) => a + b, 0);
+    const minShare = 0.32;
+    let shares = need.map(n => Math.max(n / total, minShare));
+    const sum = shares.reduce((a, b) => a + b, 0);
+    shares = shares.map(x => x / sum);
+    grid.style.gridTemplateRows = shares.map(x => `minmax(0, ${x.toFixed(4)}fr)`).join(' ');
+  };
+
+  const fits = () => cards.every(c => {
+    const l = c.querySelector('.xp-list');
+    return l.scrollHeight <= l.clientHeight + 1;
+  });
+
+  let size = 13;
+  const MIN = 8;
+  do {
+    doc.style.setProperty('--xf', size + 'px');
+    balanceRows();
+    if (fits()) return true;
+    size -= 0.25;
+  } while (size >= MIN);
+  return false;
+}
+
 async function exportTool(t, fmt) {
   if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
     showToast('Las librerías aún no cargan. Intente en un segundo.', 'err');
@@ -1166,8 +1216,12 @@ async function exportTool(t, fmt) {
 
   try {
     buildExportDoc(t);
-    // Pequeña espera para que el navegador aplique el layout de la plantilla
+    // Esperar fuentes y layout antes de medir
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
     await new Promise(r => setTimeout(r, 120));
+    const cupo = fitExportText(t);
+    if (!cupo) showToast('Hay mucho texto: algunos factores podrían recortarse. Resuma los más largos.', 'err');
+    await new Promise(r => setTimeout(r, 30));
 
     const canvas = await html2canvas(el('exportDoc'), {
       scale: 2,               // 1320×1020 → 2640×2040 px (240 ppp en carta)
@@ -1198,6 +1252,7 @@ async function exportTool(t, fmt) {
     showToast('✗ Ocurrió un error al exportar', 'err');
   } finally {
     el('exportDoc').innerHTML = '';
+    el('exportDoc').style.removeProperty('--xf');
     setBtnLoading(btn, false, fmt.toUpperCase());
   }
 }
