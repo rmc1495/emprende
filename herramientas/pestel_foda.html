@@ -1139,7 +1139,7 @@ function buildExportDoc(t) {
     <div class="xp-grid" style="${gridCols}">${orderedCats.map(cardHTML).join('')}</div>
     <div class="xp-foot">
       <span>${cfg.app} · Suite de Análisis Estratégico</span>
-      <span>Formato carta horizontal (11" × 8.5")</span>
+      <span>RMC</span>
     </div>`;
 }
 
@@ -1367,7 +1367,7 @@ function buildTextPDF(t) {
   /* Pie de página */
   pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7); pdf.setTextColor(MUTED);
   pdf.text(pdfSafe(`${cfg.app} · Suite de Análisis Estratégico`), M, footY, { baseline: 'top' });
-  pdf.text('Formato carta horizontal (11" × 8.5")', W - M, footY, { align: 'right', baseline: 'top' });
+  pdf.text('RMC', W - M, footY, { align: 'right', baseline: 'top' });
 
   return { pdf, fits: L.fits };
 }
