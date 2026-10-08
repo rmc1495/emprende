@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=358bf3d3-aa6e-4c9e-b0ea-8a0b5716e8da
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Alquimia Natural — Shampoo Artesanal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root {
+  --lav:      #C8A7D8;
+  --lav-lt:   #F8EDD8;
+  --cream:    #F8EDD8;
+  --lila:     #C8A7D8;
+  --deep:     #4E3260;
+  --gold:     #F2D48D;
+  --fondo:    #F8EDD8;
+  --texto:    #8D5AAE;
+  --blanco:   #FFFFFF;
+  --dolphin:  #655A7C;
+  --amethyst: #AB92BF;
+  --linen:    #FDF1E2;
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Lato', sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--deep);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 6%;
+  border-bottom: 2px solid var(--gold);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 12px;
+}
+.nav-logo-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px; font-weight: 700;
+  color: var(--cream);
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+.nav-logo-text span {
+  display: block;
+  font-size: 11px; font-weight: 300;
+  letter-spacing: 4px;
+  color: var(--lila);
+  font-family: 'Lato', sans-serif;
+  text-transform: uppercase;
+}
+.nav-links { display: flex; gap: 28px; align-items: center; }
+.nav-links a {
+  color: var(--lila);
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--cream); }
+.btn-nav {
+  background: transparent;
+  color: var(--cream);
+  border: 1.5px solid var(--gold);
+  padding: 8px 22px;
+  font-family: 'Lato', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.btn-nav:hover { background: var(--gold); color: var(--deep); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 680px;
+  background: var(--linen);
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  padding: 100px 8%;
+}
+.hero-text { max-width: 720px; }
+.hero-text h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(42px, 6vw, 82px);
+  line-height: .95;
+  color: var(--deep);
+  margin-bottom: 28px;
+  font-weight: 900;
+}
+.hero-text h1 em {
+  font-style: italic;
+  color: var(--lila);
+}
+.hero-sub {
+  color: var(--texto);
+  font-size: 17px;
+  max-width: 440px;
+  margin-bottom: 36px;
+  font-weight: 300;
+  line-height: 1.8;
+}
+.btn-primary {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--deep);
+  padding: 14px 34px;
+  font-family: 'Lato', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: opacity .2s;
+  border: none; cursor: pointer;
+}
+.btn-primary:hover { opacity: .88; }
+.btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+.btn-outline {
+  display: inline-block;
+  background: transparent;
+  color: var(--deep);
+  border: 1.5px solid var(--deep);
+  padding: 13px 30px;
+  font-family: 'Lato', sans-serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  margin-left: 14px;
+  transition: background .2s;
+}
+.btn-outline:hover { background: rgba(78,50,96,.08); }
+
+/* ── SECCIONES GENERALES ── */
+.sec { padding: 90px 8%; }
+.sec-sm { padding: 60px 8%; }
+.sec-dark { background: var(--deep); color: var(--lav-lt); }
+.sec-lav { background: var(--lila); color: var(--deep); }
+.sec-dolphin { background: var(--dolphin); color: var(--cream); }
+.sec-amethyst { background: var(--amethyst); color: var(--deep); }
+.sec-linen { background: var(--linen); color: var(--deep); }
+.sec-cream { background: var(--cream); color: var(--deep); }
+.sec-lav-lt { background: var(--lav-lt); color: var(--deep); }
+.sec-fondo { background: var(--fondo); color: var(--texto); }
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.sec-dark .eyebrow { color: var(--lav); }
+.sec-lav .eyebrow { color: var(--deep); opacity: .6; }
+.sec-dolphin .eyebrow { color: var(--gold); }
+.sec-amethyst .eyebrow { color: var(--deep); opacity: .65; }
+.sec-amethyst .eco-num { color: var(--deep); opacity: .5; }
+.sec-linen .eyebrow { color: var(--deep); opacity: .6; }
+
+h2.display {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(34px, 5vw, 66px);
+  line-height: 1;
+  margin-bottom: 24px;
+  font-weight: 900;
+}
+h2.display em { font-style: italic; }
+
+.lead {
+  font-size: 18px;
+  line-height: 1.75;
+  max-width: 700px;
+  font-weight: 300;
+}
+
+/* Divisor ornamental */
+.ornament {
+  display: flex; align-items: center; gap: 14px;
+  margin: 20px 0 36px;
+}
+.ornament::before, .ornament::after {
+  content: ''; flex: 1; height: 1px;
+  background: currentColor; opacity: .2;
+  max-width: 80px;
+}
+.ornament-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+/* ── ESENCIA ── */
+.esencia-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  margin-top: 50px;
+}
+.esencia-img {
+  position: relative;
+  max-width: 460px;
+  margin: 0 auto;
+}
+.esencia-img img {
+  width: 100%;
+  aspect-ratio: 925 / 1280;
+  object-fit: cover;
+  display: block;
+}
+.esencia-img::after {
+  content: '';
+  position: absolute;
+  top: -12px; left: -12px;
+  right: 12px; bottom: 12px;
+  border: 1px solid var(--gold);
+  pointer-events: none;
+  z-index: 0;
+}
+.esencia-img img { position: relative; z-index: 1; }
+.esencia-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 36px;
+}
+.stat-box {
+  background: rgba(248,237,216,.07);
+  border: 1px solid rgba(242,212,141,.25);
+  padding: 22px 20px;
+}
+.stat-box .num {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+}
+.stat-box .label {
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--lav);
+  margin-top: 6px;
+}
+
+/* ── INGREDIENTES ── */
+.ing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 50px;
+}
+.ing-card {
+  background: var(--blanco);
+  padding: 40px 32px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .25s;
+}
+.ing-card:hover { transform: translateY(-4px); }
+.ing-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gold);
+}
+.ing-card:nth-child(2) { background: var(--lila); }
+.ing-card:nth-child(2)::before { background: var(--deep); }
+.ing-icon {
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 14px;
+  display: block;
+}
+.ing-card:nth-child(2) .ing-icon { color: var(--deep); }
+.ing-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+.ing-card p {
+  font-size: 14px;
+  color: #8D5AAE;
+  margin-bottom: 20px;
+  font-weight: 300;
+  line-height: 1.7;
+}
+.ing-card:nth-child(2) p { color: var(--deep); }
+.ing-list {
+  list-style: none;
+  font-size: 14px;
+  line-height: 2;
+}
+.ing-list li::before {
+  content: '— ';
+  color: var(--gold);
+  font-weight: 700;
+}
+.ing-card:nth-child(2) .ing-list li::before { color: var(--deep); }
+
+/* ── PRODUCTO DESTACADO ── */
+.producto-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  min-height: 620px;
+}
+.producto-img {
+  overflow: hidden;
+}
+.producto-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 95%;
+  display: block;
+}
+.producto-info {
+  background: var(--linen);
+  padding: 70px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.producto-info .eyebrow { color: var(--deep); opacity: .6; }
+.producto-info h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(30px, 3.5vw, 50px);
+  color: var(--deep);
+  margin-bottom: 20px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.producto-info p {
+  color: var(--texto);
+  font-size: 16px;
+  line-height: 1.8;
+  font-weight: 300;
+  margin-bottom: 16px;
+  max-width: 420px;
+}
+.producto-precio {
+  margin: 24px 0;
+  display: flex; align-items: baseline; gap: 10px;
+}
+.precio-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 42px;
+  color: var(--deep);
+  font-weight: 900;
+  line-height: 1;
+}
+.precio-label {
+  font-size: 13px;
+  color: var(--texto);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.prod-tags {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.tag {
+  border: 1px solid rgba(78,50,96,.3);
+  color: var(--deep);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+}
+
+/* ── CATÁLOGO ── */
+.catalogo-head {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 50px;
+}
+.catalogo-head .eyebrow { text-align: center; }
+.catalogo-head h2.display { margin-left: auto; margin-right: auto; }
+.catalogo-head .lead { margin: 0 auto; }
+.catalogo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 50px;
+}
+.catalogo-card {
+  background: var(--blanco);
+  padding: 40px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.catalogo-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gold);
+}
+.catalogo-visual {
+  height: 155px;
+  background: rgba(200,167,216,.22);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: var(--deep);
+  margin-bottom: 22px;
+}
+.catalogo-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--deep);
+  margin-bottom: 10px;
+}
+.catalogo-card p {
+  font-size: 14px;
+  color: #8D5AAE;
+  font-weight: 300;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.catalogo-avail {
+  font-size: 13px;
+  color: var(--deep);
+  font-weight: 700;
+  margin-bottom: 22px;
+}
+.catalogo-avail span {
+  display: block;
+  font-weight: 300;
+  color: #8D5AAE;
+  margin-top: 4px;
+}
+/* ── BENEFICIOS ── */
+.ben-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: rgba(78,50,96,.12);
+  margin-top: 50px;
+  border: 1px solid rgba(78,50,96,.12);
+}
+.ben-item {
+  background: var(--fondo);
+  padding: 32px 24px;
+  text-align: center;
+  transition: background .2s;
+}
+.ben-item:hover { background: var(--blanco); }
+.ben-icon-line {
+  width: 36px; height: 2px;
+  background: var(--gold);
+  margin: 0 auto 14px;
+}
+.ben-item h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.ben-item p {
+  font-size: 13px;
+  color: #8D5AAE;
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+/* ── PROGRAMA ECO ── */
+.eco-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.eco-steps {
+  margin-top: 30px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+.eco-step {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+.eco-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+  opacity: .6;
+}
+.eco-step h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+.eco-step p { font-size: 14px; font-weight: 300; line-height: 1.6; }
+.eco-visual {
+  background: var(--linen);
+  padding: 50px 40px;
+  text-align: center;
+}
+.eco-visual .big-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 80px;
+  font-weight: 900;
+  color: var(--deep);
+  line-height: 1;
+  opacity: .12;
+}
+.eco-visual .eco-msg {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: var(--deep);
+  font-style: italic;
+  margin-top: -40px;
+  position: relative;
+}
+.eco-visual .eco-sub {
+  font-size: 14px;
+  color: var(--deep);
+  opacity: .7;
+  margin-top: 12px;
+  font-weight: 300;
+}
+
+/* ── NOSOTROS ── */
+.nosotros-intro {
+  max-width: 700px;
+  margin-bottom: 60px;
+}
+.valores-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: rgba(78,50,96,.1);
+}
+.valor-card {
+  background: var(--blanco);
+  padding: 40px 32px;
+}
+.valor-card .vc-tag {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+  display: block;
+}
+.valor-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: var(--deep);
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+.valor-card p { font-size: 15px; color: #8D5AAE; font-weight: 300; line-height: 1.7; }
+
+/* Equipo */
+.equipo-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  margin: 60px 0 30px;
+  font-weight: 700;
+}
+.equipo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 200px);
+  gap: 200px;
+  width: 600px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.miembro {
+  text-align: center;
+}
+.miembro-avatar {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: var(--lila);
+  margin: 0 auto 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--deep);
+}
+.miembro h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+.miembro p { font-size: 12px; color: #8D5AAE; letter-spacing: 1px; text-transform: uppercase; }
+
+/* ── RESEÑAS ── */
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: rgba(248,237,216,.08);
+  margin-top: 50px;
+}
+.review-card {
+  background: rgba(248,237,216,.05);
+  padding: 36px 30px;
+  border-top: 2px solid rgba(242,212,141,.3);
+}
+.review-stars {
+  color: var(--gold);
+  font-size: 14px;
+  letter-spacing: 3px;
+  margin-bottom: 16px;
+}
+.review-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px;
+  font-style: italic;
+  color: var(--deep);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+.review-author {
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--deep);
+  opacity: .65;
+}
+
+/* ── CONTACTO ── */
+.contacto-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+.contacto-info h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 4vw, 54px);
+  font-weight: 900;
+  margin-bottom: 20px;
+  line-height: 1;
+}
+.contacto-info p {
+  font-size: 17px;
+  font-weight: 300;
+  line-height: 1.8;
+  margin-bottom: 36px;
+}
+.contacto-items {
+  display: flex; flex-direction: column; gap: 18px;
+}
+.ci-item {
+  display: flex; gap: 18px; align-items: flex-start;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(78,50,96,.2);
+}
+.ci-label {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--deep);
+  opacity: .6;
+  font-weight: 700;
+  min-width: 90px;
+  padding-top: 3px;
+}
+.ci-value {
+  font-size: 16px;
+  color: var(--deep);
+  font-weight: 300;
+}
+/* Formulario */
+.contacto-form {
+  background: var(--blanco);
+  border-radius: 25px;
+  padding: 34px;
+  box-shadow: 0 15px 35px rgba(78,50,96,.14);
+}
+.form-group {
+  margin-bottom: 20px;
+}
+.form-label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  color: #8D5AAE;
+  font-weight: 700;
+}
+.form-input, .form-textarea {
+  width: 100%;
+  border: 1.5px solid #D8C9E2;
+  border-radius: 12px;
+  background: var(--blanco);
+  padding: 12px 16px;
+  font-family: 'Lato', sans-serif;
+  font-size: 15px;
+  color: var(--texto);
+  outline: none;
+  transition: border-color .2s;
+}
+.form-input:focus, .form-textarea:focus {
+  border-color: var(--deep);
+}
+.form-textarea { height: 120px; resize: vertical; }
+.form-status {
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  display: none;
+}
+.form-status.is-success { display: block; color: #3E7A4C; }
+.form-status.is-error { display: block; color: #B5473F; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--deep);
+  color: var(--lav-lt);
+  padding: 50px 8% 30px;
+  border-top: 2px solid var(--gold);
+}
+.footer-top {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 50px;
+  padding-bottom: 36px;
+  border-bottom: 1px solid rgba(242,212,141,.2);
+  margin-bottom: 24px;
+}
+.footer-brand p {
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.7;
+  max-width: 300px;
+  margin-top: 14px;
+  color: var(--lav);
+}
+.footer-col h5 {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+.footer-col ul { list-style: none; }
+.footer-col li { margin-bottom: 8px; }
+.footer-col a {
+  color: var(--lav);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 300;
+  transition: color .2s;
+}
+.footer-col a:hover { color: var(--cream); }
+.footer-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: rgba(200,167,216,.5);
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width: 900px) {
+  .esencia-grid, .producto-grid, .eco-inner,
+  .contacto-grid, .nosotros-intro + .valores-grid { grid-template-columns: 1fr; }
+  .producto-img { height: 380px; }
+  .ing-grid, .reviews-grid, .catalogo-grid { grid-template-columns: 1fr; }
+  .ben-grid { grid-template-columns: 1fr 1fr; }
+  .equipo-grid { grid-template-columns: 1fr 1fr; width: 100%; max-width: 460px; gap: 40px; }
+  .footer-top { grid-template-columns: 1fr; gap: 30px; }
+  .nav-links { display: none; }
+  .sec { padding: 60px 7%; }
+}
+@media(max-width: 520px) {
+  .ben-grid { grid-template-columns: 1fr; }
+  .equipo-grid { grid-template-columns: 1fr; width: 100%; max-width: 320px; gap: 24px; }
+  .valores-grid { grid-template-columns: 1fr; }
+}
+@media(prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-text">
+      ALQUIMIA
+      <span>natural</span>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a href="#inicio">Inicio</a>
+    <a href="#ingredientes">Ingredientes</a>
+    <a href="#producto">Producto</a>
+    <a href="#beneficios">Beneficios</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+  <a class="btn-nav" href="#producto">Adquirir</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-text">
+    <h1>EL CUIDADO <em>NATURAL</em> QUE TU CABELLO MERECE</h1>
+    <p class="hero-sub">Shampoo artesanal elaborado con romero, manzanilla y cebolla morada. Ingredientes reales para resultados visibles, con conciencia ambiental.</p>
+    <a class="btn-primary" href="#producto">Conocer el producto</a>
+    <a class="btn-outline" href="#ingredientes">Ver ingredientes</a>
+  </div>
+</section>
+
+<!-- ESENCIA -->
+<section class="sec sec-dolphin" id="esencia">
+  <div class="eyebrow">Nuestra esencia</div>
+  <div class="esencia-grid">
+    <div class="esencia-text">
+      <h2 class="display">Una <em>fórmula</em> nacida del compromiso</h2>
+      <div class="ornament"><div class="ornament-dot"></div></div>
+      <p class="lead">En Alquimia Natural unimos la sabiduría de los ingredientes naturales con la pasión de un equipo estudiantil comprometido. Creemos que cuidar el cabello no debería implicar comprometer el bienestar del ambiente ni el bolsillo de nuestros clientes.</p>
+      <p style="margin-top:20px; font-size:15px; font-weight:300; color:var(--lav); line-height:1.8;">Cada frasco de nuestro shampoo es el resultado de investigación, prueba y dedicación genuina. Seleccionamos ingredientes con propiedades demostradas para el cuidado capilar y los combinamos en una fórmula accesible, responsable y efectiva.</p>
+      <div class="esencia-stats" style="margin-top:36px;">
+        <div class="stat-box">
+          <div class="num">3</div>
+          <div class="label">Ingredientes activos naturales</div>
+        </div>
+        <div class="stat-box">
+          <div class="num">100%</div>
+          <div class="label">Emprendimiento estudiantil</div>
+        </div>
+        <div class="stat-box">
+          <div class="num">0</div>
+          <div class="label">Químicos agresivos añadidos</div>
+        </div>
+        <div class="stat-box">
+          <div class="num">CR</div>
+          <div class="label">Hecho en Costa Rica</div>
+        </div>
+      </div>
+    </div>
+    <div class="esencia-img">
+      <img src="images/shampoo-producto-alquimia-natural.jpeg" alt="Botella de Shampoo Alquimia Natural">
+    </div>
+  </div>
+</section>
+
+<!-- INGREDIENTES -->
+<section class="sec sec-amethyst" id="ingredientes">
+  <div class="eyebrow">Ingredientes naturales</div>
+  <h2 class="display">El poder de <em>la naturaleza</em></h2>
+  <p class="lead">Cada ingrediente fue seleccionado por sus propiedades beneficiosas para el cabello y el cuero cabelludo, respaldadas por el conocimiento etnobotánico y el uso tradicional.</p>
+  <div class="ing-grid">
+    <article class="ing-card">
+      <span class="ing-icon">Ingrediente 01</span>
+      <h3>Romero</h3>
+      <p>Planta aromática con propiedades antioxidantes y estimulantes reconocidas en el cuidado capilar desde hace siglos. Su aceite esencial favorece la microcirculación del cuero cabelludo.</p>
+      <ul class="ing-list">
+        <li>Estimula la circulación en el cuero cabelludo</li>
+        <li>Favorece el crecimiento del cabello</li>
+        <li>Fortalece la fibra capilar desde la raíz</li>
+        <li>Ayuda a regular la producción de grasa</li>
+        <li>Contribuye a reducir la caspa</li>
+      </ul>
+    </article>
+    <article class="ing-card">
+      <span class="ing-icon">Ingrediente 02</span>
+      <h3>Manzanilla</h3>
+      <p>Reconocida mundialmente por sus propiedades calmantes y antiinflamatorias. Aporta suavidad, brillo y alivio a quienes padecen cuero cabelludo sensible o irritado.</p>
+      <ul class="ing-list">
+        <li>Aporta brillo natural y sedosidad</li>
+        <li>Suaviza y nutre la fibra capilar</li>
+        <li>Calma la irritación del cuero cabelludo</li>
+        <li>Reduce la resequedad y el picor</li>
+        <li>Facilita el peinado y la manejabilidad</li>
+      </ul>
+    </article>
+    <article class="ing-card">
+      <span class="ing-icon">Ingrediente 03</span>
+      <h3>Cebolla Morada</h3>
+      <p>Rica en azufre, antioxidantes y flavonoides, la cebolla morada es uno de los ingredientes más estudiados en el ámbito del cuidado capilar natural por su efecto fortalecedor.</p>
+      <ul class="ing-list">
+        <li>Fortalece las raíces y el folículo capilar</li>
+        <li>Favorece el crecimiento del cabello</li>
+        <li>Mejora la circulación en el cuero cabelludo</li>
+        <li>Contribuye a reducir la caída del cabello</li>
+        <li>Mantiene el cuero cabelludo saludable</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<!-- PRODUCTO DESTACADO -->
+<section id="producto">
+  <div class="producto-grid">
+    <div class="producto-img">
+      <img src="images/shampoo-producto-alquimia-natural-fondo.jpeg" alt="Shampoo Alquimia Natural">
+    </div>
+    <div class="producto-info">
+      <div class="eyebrow">Nuestro producto</div>
+      <h2>Shampoo Natural Alquimia</h2>
+      <p>Una fórmula cuidadosamente desarrollada que combina lo mejor de tres ingredientes naturales en un shampoo de uso diario. Limpia profundamente sin agredir, nutre sin pesar y fortalece desde la raíz.</p>
+      <p>Envase de 500 ml, apto para todo tipo de cabello. Libre de parabenos, sulfatos agresivos y colorantes artificiales.</p>
+      <div class="prod-tags">
+        <span class="tag">Uso diario</span>
+        <span class="tag">Todo tipo de cabello</span>
+        <span class="tag">Sin parabenos</span>
+        <span class="tag">Hecho en Costa Rica</span>
+      </div>
+      <div class="producto-precio">
+        <div class="precio-val">₡7.420</div>
+        <div class="precio-label">por unidad · 500 ml</div>
+      </div>
+      <a class="btn-primary" href="#contacto">Realizar pedido</a>
+    </div>
+  </div>
+</section>
+
+<!-- CATÁLOGO -->
+<section class="sec sec-dolphin" id="catalogo">
+  <div class="catalogo-head">
+    <div class="eyebrow">Catálogo</div>
+    <h2 class="display">Elige la presentación que prefieras</h2>
+    <p class="lead">Las opciones pueden adaptarse a las necesidades del proyecto y a la disponibilidad de cada presentación.</p>
+  </div>
+  <div class="catalogo-grid">
+    <div class="catalogo-card">
+      <div class="catalogo-visual">Vainilla</div>
+      <h3>Shampoo Natural Vainilla</h3>
+      <p>Fragancia de vainilla apta para cosméticos, con una presentación pensada para el uso cotidiano.</p>
+      <div class="catalogo-avail">Disponibilidad:<span>500 ml</span></div>
+      <a class="btn-primary" href="#contacto">Ver producto</a>
+    </div>
+    <div class="catalogo-card">
+      <div class="catalogo-visual">Coco</div>
+      <h3>Shampoo Natural Coco</h3>
+      <p>Fragancia de coco apta para cosméticos, con una propuesta fresca y agradable.</p>
+      <div class="catalogo-avail">Disponibilidad:<span>500 ml</span></div>
+      <a class="btn-primary" href="#contacto">Ver producto</a>
+    </div>
+    <div class="catalogo-card">
+      <div class="catalogo-visual">Kit Natural</div>
+      <h3>Kit Natural</h3>
+      <p>Una opción para conocer las dos fragancias y aprovechar una promoción especial.</p>
+      <div class="catalogo-avail">Incluye:<span>Shampoo Vainilla · Shampoo Coco · Descuento</span></div>
+      <a class="btn-primary" href="#contacto">Comprar kit</a>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFICIOS -->
+<section class="sec sec-amethyst" id="beneficios">
+  <div class="eyebrow">Beneficios</div>
+  <h2 class="display">Lo que <em>transforma</em> tu rutina</h2>
+  <div class="ben-grid">
+    <div class="ben-item">
+      <div class="ben-icon-line"></div>
+      <h4>Aporta brillo</h4>
+      <p>La manzanilla devuelve la luminosidad y el brillo natural al cabello desde el primer lavado.</p>
+    </div>
+    <div class="ben-item">
+      <div class="ben-icon-line"></div>
+      <h4>Fortalece el cabello</h4>
+      <p>El romero y la cebolla morada trabajan juntos para fortalecer la fibra capilar y reducir la fragilidad.</p>
+    </div>
+    <div class="ben-item">
+      <div class="ben-icon-line"></div>
+      <h4>Nutre y suaviza</h4>
+      <p>La combinación de ingredientes naturales hidrata el cabello y suaviza la cutícula, mejorando la textura.</p>
+    </div>
+    <div class="ben-item">
+      <div class="ben-icon-line"></div>
+      <h4>Favorece el crecimiento</h4>
+      <p>El romero estimula la microcirculación y, junto con la cebolla morada, promueve un crecimiento más activo.</p>
+    </div>
+    <div class="ben-item">
+      <div class="ben-icon-line"></div>
+      <h4>Limpia en profundidad</h4>
+      <p>Elimina el exceso de grasa, residuos y suciedad sin resecar ni dañar el cuero cabelludo.</p>
+    </div>
+    <div class="ben-item">
+      <div class="ben-icon-line"></div>
+      <h4>Reduce la caída</h4>
+      <p>Los activos naturales de la cebolla morada contribuyen a fortalecer la raíz y disminuir la caída del cabello.</p>
+    </div>
+    <div class="ben-item">
+      <div class="ben-icon-line"></div>
+      <h4>Mejora la manejabilidad</h4>
+      <p>Después de cada lavado, el cabello queda más fácil de peinar, sin nudos y con mayor suavidad.</p>
+    </div>
+    <div class="ben-item">
+      <div class="ben-icon-line"></div>
+      <h4>Opción accesible</h4>
+      <p>Calidad y naturaleza a un precio justo, sin comprometer la efectividad ni el cuidado ambiental.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMA ECO -->
+<section class="sec sec-linen">
+  <div class="eco-inner">
+    <div class="eco-text">
+      <div class="eyebrow">Programa ambiental</div>
+      <h2 class="display">Devuelve tu envase, <em>gana</em> un beneficio</h2>
+      <!-- <div class="ornament"><div class="ornament-dot"></div></div> -->
+      <p style="font-size:16px; font-weight:300; line-height:1.8; margin-bottom:30px;">Creemos que la responsabilidad ambiental no termina con el último uso del producto. Por eso creamos un programa de recuperación de envases que recompensa a quienes se suman al cuidado del planeta.</p>
+      <div class="eco-steps">
+        <div class="eco-step">
+          <div class="eco-num">01</div>
+          <div>
+            <h4>Termina tu shampoo</h4>
+            <p>Usa y disfruta el producto hasta el final. Enjuaga el frasco vacío y consérvalo.</p>
+          </div>
+        </div>
+        <div class="eco-step">
+          <div class="eco-num">02</div>
+          <div>
+            <h4>Devuelve el envase</h4>
+            <p>Entrégalo en cualquiera de nuestros puntos de recolección o en el momento de tu próxima compra.</p>
+          </div>
+        </div>
+        <div class="eco-step">
+          <div class="eco-num">03</div>
+          <div>
+            <h4>Recibe tu descuento</h4>
+            <p>Por cada envase devuelto obtienes un descuento especial en tu siguiente compra. Así de simple.</p>
+          </div>
+        </div>
+      </div>
+      <br>
+      <a class="btn-primary" href="#contacto">Participar en el programa</a>
+    </div>
+    <div class="eco-visual">
+      <div class="big-text">ECO</div>
+      <div class="eco-msg">Comprar bien es cuidar el planeta</div>
+      <div class="eco-sub">Cada envase recuperado reduce residuos y nos permite seguir produciendo de forma responsable.</div>
+    </div>
+  </div>
+</section>
+
+<!-- NOSOTROS -->
+<section class="sec sec-dolphin" id="nosotros">
+  <div class="eyebrow">Quiénes somos</div>
+  <h2 class="display" style="max-width:700px;">Un equipo que cree en la <em>naturaleza y la innovación</em></h2>
+  <p class="lead" style="margin-bottom:50px;">Somos estudiantes del CTP de Educación Comercial y de Servicio comprometidos con la creación de soluciones reales. Alquimia Natural nació como un proyecto de Emprendimiento e Innovación con la convicción de que se puede hacer algo bueno, accesible y responsable.</p>
+  <div class="valores-grid">
+    <div class="valor-card">
+      <span class="vc-tag">Misión</span>
+      <h3>Lo que hacemos</h3>
+      <p>Brindar a las personas un shampoo natural, accesible y de calidad, elaborado con ingredientes seleccionados por sus beneficios reales para el cabello y el cuero cabelludo.</p>
+    </div>
+    <div class="valor-card">
+      <span class="vc-tag">Visión</span>
+      <h3>A donde vamos</h3>
+      <p>Ser reconocidos como un emprendimiento estudiantil que demuestra que la innovación, la calidad y el compromiso ambiental pueden ir de la mano desde las aulas costarricenses.</p>
+    </div>
+    <div class="valor-card">
+      <span class="vc-tag">Valores</span>
+      <h3>Cómo trabajamos</h3>
+      <p>Con honestidad en cada ingrediente que usamos, responsabilidad ambiental en cada decisión y la pasión de un equipo que cree genuinamente en lo que crea.</p>
+    </div>
+  </div>
+
+  <h3 class="equipo-title">Fundadoras</h3>
+  <div class="equipo-grid">
+    <div class="miembro">
+      <h4>Angelmary Martínez Chaves</h4>
+    </div>
+    <div class="miembro">
+      <h4>Sophia Soto Ramírez</h4>
+    </div>
+  </div>
+</section>
+
+<!-- RESEÑAS -->
+<section class="sec sec-amethyst">
+  <div class="eyebrow">Testimonios</div>
+  <h2 class="display">Lo que <em>dicen</em> quienes lo usan</h2>
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <div class="review-text">"Después de unas semanas usando el shampoo, mi cabello se siente notablemente más suave y con más brillo. No esperaba ver resultados tan rápido."</div>
+      <div class="review-author">— Sofía Quedasa Fernández</div>
+    </div>
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <div class="review-text">"El aroma es increíble y la presentación muy cuidada. Se nota que hay dedicación detrás del producto. Definitivamente lo recomiendo."</div>
+      <div class="review-author">— Verónica Rodríguez Cruz</div>
+    </div>
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <div class="review-text">"Me encanta que sea natural y accesible. Mi cabello ha reducido la caída y el cuero cabelludo ya no me pica como antes. Un cambio real."</div>
+      <div class="review-author">—  Raquel Murillo Villegas</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="sec sec-linen" id="contacto">
+  <div class="contacto-grid">
+    <div class="contacto-info">
+      <div class="eyebrow">Contacto</div>
+      <h2 class="display">Hablemos <em>hoy</em></h2>
+      <p>¿Tienes preguntas sobre el producto, deseas hacer un pedido o quieres unirte al programa de recuperación de envases? Estamos disponibles para atenderte.</p>
+      <div class="contacto-items">
+        <div class="ci-item">
+          <div class="ci-label">WhatsApp</div>
+          <div class="ci-value">+506 7152-6636</div>
+        </div>
+        <!-- <div class="ci-item">
+          <div class="ci-label">Correo</div>
+          <div class="ci-value">contacto@alquimianatural.com</div>
+        </div> -->
+        <div class="ci-item">
+          <div class="ci-label">Ubicación</div>
+          <div class="ci-value">San José, Costa Rica</div>
+        </div>
+        <!-- <div class="ci-item">
+          <div class="ci-label">Horario</div>
+          <div class="ci-value">Lunes a viernes, 8 a.m. – 5 p.m.</div>
+        </div> -->
+      </div>
+    </div>
+    <form class="contacto-form" id="contact-form">
+      <div class="form-group">
+        <label class="form-label">Nombre completo</label>
+        <input class="form-input" type="text" name="name" placeholder="Su nombre" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Correo electrónico</label>
+        <input class="form-input" type="email" name="email" placeholder="correo@ejemplo.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Teléfono (opcional)</label>
+        <input class="form-input" type="tel" name="phone" placeholder="+506">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mensaje</label>
+        <textarea class="form-textarea" name="message" placeholder="Escriba su consulta o pedido aquí..." required></textarea>
+      </div>
+      <button class="btn-primary" type="submit" id="contact-submit">Enviar mensaje</button>
+      <div class="form-status" id="form-status" role="status" aria-live="polite"></div>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="nav-logo">
+        <div class="nav-logo-text" style="color:var(--cream)">
+          ALQUIMIA
+          <span>natural</span>
+        </div>
+      </div>
+      <p>Emprendimiento estudiantil comprometido con el bienestar capilar, la innovación natural y la responsabilidad ambiental. Hecho con dedicación en Costa Rica.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Secciones</h5>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#ingredientes">Ingredientes</a></li>
+        <li><a href="#producto">Producto</a></li>
+        <li><a href="#beneficios">Beneficios</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h5>Contacto</h5>
+      <ul>
+        <li><a href="#">WhatsApp</a></li>
+        <li><a href="mailto:contacto@alquimianatural.com">Correo electrónico</a></li>
+        <li><a href="#">San José, Costa Rica</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Alquimia Natural — Todos los derechos reservados</span>
+    <span>Política de privacidad &nbsp;·&nbsp; Términos y condiciones</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var form = document.getElementById('contact-form');
+  if (!form) return;
+  var submitBtn = document.getElementById('contact-submit');
+  var status = document.getElementById('form-status');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    status.className = 'form-status';
+    status.textContent = '';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+
+    var data = {
+      name: form.name.value.trim(),
+      email: form.email.value.trim(),
+      phone: form.phone.value.trim(),
+      message: form.message.value.trim()
+    };
+
+    fetch('/.netlify/functions/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('request-failed');
+        status.className = 'form-status is-success';
+        status.textContent = '¡Mensaje enviado! Le responderemos pronto.';
+        form.reset();
+      })
+      .catch(function () {
+        status.className = 'form-status is-error';
+        status.textContent = 'No se pudo enviar el mensaje. Intente de nuevo o escríbanos por WhatsApp.';
+      })
+      .finally(function () {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar mensaje';
+      });
+  });
+})();
+</script>
+
+</body>
+</html>
