@@ -93,11 +93,29 @@ nav {
   min-height: 680px;
   background: var(--linen);
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 60px;
   align-items: center;
   padding: 100px 8%;
 }
 .hero-text { max-width: 720px; }
+
+/* Video de marca en el hero */
+.hero-video {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  justify-self: end;
+  border: 3px solid var(--gold);
+}
+.hero-video video {
+  position: relative; z-index: 1;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--lav);
+}
 .hero-text h1 {
   font-family: 'Playfair Display', serif;
   font-size: clamp(42px, 6vw, 82px);
@@ -228,14 +246,9 @@ h2.display em { font-style: italic; }
   object-fit: cover;
   display: block;
 }
-.esencia-img::after {
-  content: '';
-  position: absolute;
-  top: -12px; left: -12px;
-  right: 12px; bottom: 12px;
-  border: 1px solid var(--gold);
-  pointer-events: none;
-  z-index: 0;
+/* Marco dorado parejo alrededor de la imagen (mismo estilo que el video) */
+.esencia-img {
+  border: 3px solid var(--gold);
 }
 .esencia-img img { position: relative; z-index: 1; }
 .esencia-stats {
@@ -791,6 +804,8 @@ footer {
 
 /* ── RESPONSIVE ── */
 @media(max-width: 900px) {
+  .hero { grid-template-columns: 1fr; gap: 50px; padding: 70px 7%; min-height: 0; }
+  .hero-video { justify-self: center; }
   .esencia-grid, .producto-grid, .eco-inner,
   .contacto-grid, .nosotros-intro + .valores-grid { grid-template-columns: 1fr; }
   .producto-img { height: 380px; }
@@ -839,6 +854,14 @@ footer {
     <p class="hero-sub">Shampoo artesanal elaborado con romero, manzanilla y cebolla morada. Ingredientes reales para resultados visibles, con conciencia ambiental.</p>
     <a class="btn-primary" href="#producto">Conocer el producto</a>
     <a class="btn-outline" href="#ingredientes">Ver ingredientes</a>
+  </div>
+  <div class="hero-video">
+    <video id="hero-video" autoplay muted loop playsinline preload="metadata"
+           poster="videos/alquimia-intro-poster.jpg"
+           aria-label="Animación del logotipo de Alquimia Natural">
+      <source src="videos/alquimia-intro.webm" type="video/webm">
+      <source src="videos/alquimia-intro.mp4" type="video/mp4">
+    </video>
   </div>
 </section>
 
@@ -1214,6 +1237,15 @@ footer {
 </footer>
 
 <script>
+// Respeta "reducir movimiento": muestra solo la imagen fija del video
+(function () {
+  var v = document.getElementById('hero-video');
+  if (v && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    v.removeAttribute('autoplay');
+    v.pause();
+  }
+})();
+
 (function () {
   var form = document.getElementById('contact-form');
   if (!form) return;
