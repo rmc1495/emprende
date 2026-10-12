@@ -106,7 +106,15 @@ nav {
   width: 100%;
   max-width: 620px;
   justify-self: end;
-  border: 3px solid var(--gold);
+  /* Borde dorado con degradado (el padding es el grosor del borde) */
+  padding: 4px;
+  border-radius: 26px;
+  background: linear-gradient(135deg, #F7E3AE 0%, #E2B65C 35%, #FBEFCB 55%, #D9A848 80%, #F2D48D 100%);
+  /* Resplandor difuminado lila + dorado alrededor */
+  box-shadow:
+    0 0 0 6px rgba(242,212,141,.22),
+    0 22px 50px -14px rgba(78,50,96,.45),
+    0 0 60px rgba(200,167,216,.55);
 }
 .hero-video video {
   position: relative; z-index: 1;
@@ -115,6 +123,7 @@ nav {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   background: var(--lav);
+  border-radius: 22px;
 }
 .hero-text h1 {
   font-family: 'Playfair Display', serif;
