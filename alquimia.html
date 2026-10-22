@@ -49,6 +49,7 @@
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 section[id] { scroll-margin-top: var(--nav-h); }
 img, video, svg { display: block; max-width: 100%; }
+img { height: auto; }
 body {
   font-family: 'Lato', system-ui, sans-serif;
   background: var(--linen);
@@ -386,9 +387,9 @@ h1, h2, h3, h4 { text-wrap: balance; }
 }
 .arch img {
   position: relative;
-  width: 100%;
+  width: 100%; height: auto;
   aspect-ratio: 925 / 1280;
-  object-fit: cover;
+  object-fit: cover; object-position: 50% 45%;
   border-radius: 999px 999px var(--radius) var(--radius);
   box-shadow: var(--shadow-lg);
 }
@@ -853,7 +854,8 @@ footer {
   .ing-grid, .catalogo-grid, .reviews-grid, .valores-grid { grid-template-columns: 1fr; max-width: 620px; }
   .footer-top { grid-template-columns: 1fr 1fr; }
   .footer-brand { grid-column: 1 / -1; }
-  .arch { max-width: 360px; }
+  .arch { max-width: 300px; }
+  .arch img { aspect-ratio: 4 / 5; }
   .esencia-visual { order: -1; }
 }
 @media (max-width: 600px) {
